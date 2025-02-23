@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-public class GeographicTest {
+public class GeographicIndexTest {
     @BeforeEach
     void setup() {
     }
@@ -17,23 +17,23 @@ public class GeographicTest {
     @Test
     public void testBasics() {
         // Traversal, name aggregation
-        assertEquals( "World", Geographic.WORLD.getName() );
+        assertEquals( "World", GeographicIndex.WORLD.getName() );
 
         // System.out.println( Geographic.WORLD.getNames() );
-        assertEquals( List.of( "Africa", "America", "Asia", "Europe", "India", "Orient"), Geographic.WORLD.getNames());
+        assertEquals( List.of( "Africa", "America", "Asia", "Europe", "India", "Orient"), GeographicIndex.WORLD.getNames());
 
         // System.out.println( Geographic.WORLD.getAllNames() );
-        List<String> allNames = Geographic.WORLD.getAllNames();
+        List<String> allNames = GeographicIndex.WORLD.getAllNames();
         assertEquals( 28, allNames.size());
         assertEquals("World",allNames.getFirst());
         assertEquals("Africa", allNames.get(1));
         assertEquals("Tibet", allNames.getLast());
 
         // Parents
-        assertNull( Geographic.WORLD.getParent() );
-        List<Geographic> regions = Geographic.WORLD.getRegions();
+        assertNull( GeographicIndex.WORLD.getParent() );
+        List<GeographicIndex> regions = GeographicIndex.WORLD.getRegions();
         regions
-            .forEach(g -> assertEquals( Geographic.WORLD, g.getParent()) );
+            .forEach(g -> assertEquals( GeographicIndex.WORLD, g.getParent()) );
 
 
     }
@@ -41,16 +41,16 @@ public class GeographicTest {
     @Test
     public void testArmies() {
         // Find
-        Optional<Geographic> geo = Geographic.find( "Arabia" );
+        Optional<GeographicIndex> geo = GeographicIndex.find( "Arabia" );
         assertTrue( geo.isPresent() );
         assertEquals( "Arabia", geo.get().getName() );
-        geo = Geographic.find( "Atlantis" );
+        geo = GeographicIndex.find( "Atlantis" );
         assertFalse( geo.isPresent() );
 
-        assertEquals( Geographic.find( "Asia" ).get(), Geographic.find( "Arabia" ).get().getParent() );
+        assertEquals( GeographicIndex.find( "Asia" ).get(), GeographicIndex.find( "Arabia" ).get().getParent() );
 
         // Army aggregation
-        Geographic africa = Geographic.find( "Africa" ).get();
+        GeographicIndex africa = GeographicIndex.find( "Africa" ).get();
         List<ArmyRef> armies = africa.getAllArmies();
         // System.out.println( "Armies=" + ArmyRef.toStringCompact(armies));
         assertEquals(28, armies.size());
@@ -64,7 +64,7 @@ public class GeographicTest {
         assertEquals("I/3", armies.get(1).toString());
         assertEquals("IV/45", armies.getLast().toString());
 
-        Geographic world = Geographic.find( "World" ).get();
+        GeographicIndex world = GeographicIndex.find( "World" ).get();
         armies = world.getAllArmies();
         armies.sort( Comparator.naturalOrder() );
         System.out.println( "Armies All=" + ArmyRef.toStringCompact(armies));

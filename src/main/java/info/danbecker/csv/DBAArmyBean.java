@@ -90,7 +90,7 @@ public class DBAArmyBean {
 
     @Override
     public String toString() {
-        return format( "%s, %s, Agg:%d, Top:%s, E:%s, A:%s \n   %s",
-            getRef(book, armyNum, var), name, agg, topo, enemies.replaceAll(LCAT, SCAT), allies.replace(OR, BAR), getElements());    }
-
+        return format( "%s, %s, Agg:%d, Top:%s, E:%s, A:%s\n   %s",
+            getRef(book, armyNum, var), name, agg, topo, enemies.replaceAll(LCAT, SCAT), allies.replace(OR, SCAT), getElements());
+    }
 }

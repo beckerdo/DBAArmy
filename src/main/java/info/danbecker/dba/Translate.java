@@ -19,7 +19,13 @@ import com.opencsv.bean.CsvToBeanBuilder;
  * <li>Convert an army CSV to JSON.
  * <li>Enumerate all permutations of an army list.
  * <li>See whether an army instance is an instance of an army.
+ * <li>Create lists of allied and enemy armies (draw graph? DBA dot diagrams).
+ * <li>Create lists of armies with most enemies and allies.
+ * <li>Pick a date, show armies. potential battles for that time frame.
  * </ul>
+ * <p>
+ * {@code @TODO} Create class to unite ArmyRef with Army.
+ * </p>
  * <p>
  * Lots of CSV ideas taken from
  * <a href="https://mkyong.com/java/how-to-read-and-parse-csv-file-in-java/">Mkyong.com</a>.
