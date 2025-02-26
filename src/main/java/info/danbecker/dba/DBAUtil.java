@@ -5,9 +5,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-import info.danbecker.csv.DBAArmyBean;
+import info.danbecker.csv.ArmyBean;
 
 import com.opencsv.bean.CsvToBeanBuilder;
+import info.danbecker.csv.ArmyHeaderBean;
 
 /**
  * A small utility for moving a list of
@@ -21,7 +22,7 @@ import com.opencsv.bean.CsvToBeanBuilder;
  * <li>See whether an army instance is an instance of an army.
  * <li>Create lists of allied and enemy armies (draw graph? DBA dot diagrams).
  * <li>Create lists of armies with most enemies and allies.
- * <li>Pick a date, show armies. potential battles for that time frame.
+ * <li>Pick a date, show armies, potential battles for that time frame.
  * </ul>
  * <p>
  * {@code @TODO} Create class to unite ArmyRef with Army.
@@ -32,9 +33,10 @@ import com.opencsv.bean.CsvToBeanBuilder;
  *
  * @author <a href="mailto://dan@danbecker.info>Dan Becker</a>
  */
-public class Translate {
+public class DBAUtil {
     public static final String PATH_DEFAULT = "E:\\hobbies\\games\\miniatures\\DBA\\";
-    public static final String INPUT_DEFAULT = PATH_DEFAULT + "DBAArmies3.0-Export.csv";
+    public static final String ARMY_HEADER_DEFAULT = PATH_DEFAULT + "DBA3.0-ArmyGroupNames.csv";
+    public static final String ARMY_DEFAULT = PATH_DEFAULT + "DBAArmies3.0-Export.csv";
     public static final String OUTPUT_DEFAULT = PATH_DEFAULT + "DBAArmies3.0.json";
 
     // Consider Sealed records version of command line options
@@ -47,13 +49,23 @@ public class Translate {
     // }
     // static List<Option> parseOptions(String[] args) { ... }
 
-    public static HashMap<String, DBAArmyBean> DBA3Armies = new HashMap<>();
+    public static HashMap<String, ArmyBean> DBA3Armies = new HashMap<>();
     public static void main(String[] args) throws IOException{
-        List<DBAArmyBean> beans = new CsvToBeanBuilder(new FileReader(INPUT_DEFAULT))
-                .withType(DBAArmyBean.class)
+        List<ArmyHeaderBean> headerBeans = new CsvToBeanBuilder(new FileReader(ARMY_HEADER_DEFAULT))
+                .withType(ArmyHeaderBean.class)
                 .build()
                 .parse();
 
+        headerBeans.forEach(System.out::println);
+//        beans.forEach( b -> {
+//                    DBA3Armies.put( b.getRef(), b );
+//                    System.out.println( b );
+//                }
+//        );
+        List<ArmyBean> beans = new CsvToBeanBuilder(new FileReader(ARMY_DEFAULT))
+                .withType(ArmyBean.class)
+                .build()
+                .parse();
         beans.forEach(System.out::println);
         beans.forEach( b -> {
                     DBA3Armies.put( b.getRef(), b );

@@ -17,7 +17,7 @@ import info.danbecker.dba.ArmyRef;
  * 1,1,b,Early Sumerian Army 2799-2334 BC,a2,Arable,2,4Pk or 3Bd or HCh or LCh,1xHCh or 4Bw,6x4Pk,1x4Pk or 4Bw,2xPs,1x3Ax or Ps,,,,,,4,,0,1,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,"I/1a, 4a, 5a, 5b, 6a, 9, 11a",I/4a or 5a or 5b or 6a or 9
  * </code>
  */
-public class DBAArmyBean {
+public class ArmyBean {
     @CsvBindByName(column = "Book")
     private int book;
 
@@ -91,6 +91,7 @@ public class DBAArmyBean {
     @Override
     public String toString() {
         return format( "%s, %s, Agg:%d, Top:%s, E:%s, A:%s\n   %s",
-            getRef(book, armyNum, var), name, agg, topo, enemies.replaceAll(LCAT, SCAT), allies.replace(OR, SCAT), getElements());
+            getRef(book, armyNum, var), name, agg, topo,
+                enemies.replaceAll(LCAT, SCAT), allies.replace(OR, SCAT), getElements());
     }
 }
