@@ -7,11 +7,15 @@ import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 
-/** A reference to an army that consists of the army list section
+/**
+ * A reference to an army that consists of the army list section
  * (a roman numeral 1..4), number (army 1..n), and optional version (letter).
  * <p>
  * The typical string form is I/1, I/35a, II/9d, etc. and is enough
  * to identify any army or version in the lists.
+ * <p>
+ * A version number of 0, signifies no variant letter, such as I/I or I/III.
+ * This is used for the army group name or an army with one variant.
  * <p>
  * For example, given the following section/number/version
  * <ul>
@@ -31,7 +35,6 @@ import static java.lang.String.format;
  * @param version - one-based version a..z, if version==0 signifies group reference
  */
 public record ArmyRef(int section, int number, int version) implements Comparable<ArmyRef> {
-
     public static final int MIN_SECTION = 1;
     public static final int MAX_SECTION = 4;
     public static final int MIN_NUMBER = 1;
@@ -125,7 +128,8 @@ public record ArmyRef(int section, int number, int version) implements Comparabl
         }
     }
 
-    /** Parse a comma-separated List of ArmyRef from the String.
+    /**
+     * Parse a comma-separated List of ArmyRef from the String.
      * String may have omitted book such as
      * "I/47,II/18e,31c,31f,31h,31i,31j".
      * <p>
@@ -152,7 +156,8 @@ public record ArmyRef(int section, int number, int version) implements Comparabl
         return list;
     }
 
-    /** Return a compact String to represent the given list.
+    /**
+     * Return a compact String to represent the given list.
      * String will have omitted book such as
      * "I/47,II/18e,31c,31f,31h,31i,31j".
      * <p>
@@ -179,7 +184,10 @@ public record ArmyRef(int section, int number, int version) implements Comparabl
         return sb.toString();
     }
 
-    /** Returns the max army number for the given section. */
+    /**
+     * Returns the max army number for the given section.
+     * Hardcoded for now, should be based on config file inputs.
+     * */
     public static int maxNumber( int section ) {
         return switch( section ) {
             case 1 -> 64; // or length of MAX_VERSION
@@ -190,8 +198,11 @@ public record ArmyRef(int section, int number, int version) implements Comparabl
         };
     }
 
-    /** Version count for each section,number.
-     * One-based. Do not use the zero slots. */
+    /**
+     * Version count for each section,number.
+     * One-based. Do not use the zero slots.
+     * Hardcoded for now, should be based on config file inputs.
+     */
     public static final int[][] MAX_VERSION = {
             new int[] {},
             new int[] {

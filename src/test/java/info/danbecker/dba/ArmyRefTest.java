@@ -100,7 +100,7 @@ public class ArmyRefTest {
     }
 
     @Test
-    public void testListParse() throws IllegalStateException{
+    public void testListParse() throws IllegalStateException {
         // List<ArmyRef> ar = ArmyRef.parseList("I/17,II/28e,21c,21f,21h,IV/41i,41j");
         ArmyRef expectedAr = ArmyRef.parse( "I/1" );
         List<ArmyRef> lar = ArmyRef.parseList("I/1");
@@ -145,18 +145,6 @@ public class ArmyRefTest {
 
         // Test String compare
         assertEquals( expectedArl, ArmyRef.toStringCompact( lar ));
-
-//        // Some illegal tests, bad section, army, group
-//        ParseException pe = assertThrows(
-//                ParseException.class,
-//                () -> ArmyRef.parse("IX/2")
-//        );
-//        assertEquals("Section=IX", pe.getMessage());
-//        IllegalStateException ise = assertThrows(
-//                IllegalStateException.class,
-//                () -> ArmyRef.parse("XYZ/2")
-//        );
-//        assertEquals("No match found", ise.getMessage());
     }
 
     @Test

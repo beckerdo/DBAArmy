@@ -8,7 +8,11 @@ import static java.lang.String.format;
  * which consists of the following columns:
  * - ArmyRef
  * - Variant Count
- * - Army Group name
+ * - Army Group name with group names and date ranges
+ * <p>
+ * {@code @TODO} Eventually the ArmyHeaderBean (with group name) and
+ * the Army variants (with army versions, different names, date)
+ * must be refactored into proper entities and relations.
  * <p>
  * Example data
  * <code>
@@ -20,13 +24,13 @@ import static java.lang.String.format;
  */
 public class ArmyHeaderBean {
     @CsvBindByName(column = "ArmyRef")
-    private String armyRef;
+    public String armyRef;
 
     @CsvBindByName(column = "VarCount")
-    private int varCount;
+    public int varCount;
 
     @CsvBindByName(column = "GroupName")
-    private String name;
+    public String name;
 
     @Override
     public String toString() {
