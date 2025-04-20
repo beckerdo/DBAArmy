@@ -17,49 +17,49 @@ import info.danbecker.dba.ArmyRef;
  * 1,1,b,Early Sumerian Army 2799-2334 BC,a2,Arable,2,4Pk or 3Bd or HCh or LCh,1xHCh or 4Bw,6x4Pk,1x4Pk or 4Bw,2xPs,1x3Ax or Ps,,,,,,4,,0,1,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,"I/1a, 4a, 5a, 5b, 6a, 9, 11a",I/4a or 5a or 5b or 6a or 9
  * </code>
  */
-public class ArmyBean {
+public class ArmyVariantBean {
     @CsvBindByName(column = "Book")
-    private int book;
+    public int book;
 
     @CsvBindByName(column = "Army")
-    private int armyNum;
+    public int armyNum;
 
     @CsvBindByName(column = "Var")
-    private String var;
+    public String var;
 
     @CsvBindByName(column = "Army Name")
-    private String name;
+    public String name;
 
     @CsvBindByName(column = "Topography")
-    private String topo;
+    public String topo;
 
     @CsvBindByName(column = "Agg")
-    private int agg;
+    public int agg;
 
     @CsvBindByName(column = "Enemies")
-    private String enemies;
+    public String enemies;
 
     @CsvBindByName(column = "Allies")
-    private String allies;
+    public String allies;
 
     @CsvBindByName(column = "General")
-    private String ele0;
+    public String ele0;
     @CsvBindByName(column = "1")
-    private String ele1;
+    public String ele1;
     @CsvBindByName(column = "2")
-    private String ele2;
+    public String ele2;
     @CsvBindByName(column = "3")
-    private String ele3;
+    public String ele3;
     @CsvBindByName(column = "4")
-    private String ele4;
+    public String ele4;
     @CsvBindByName(column = "5")
-    private String ele5;
+    public String ele5;
     @CsvBindByName(column = "6")
-    private String ele6;
+    public String ele6;
     @CsvBindByName(column = "7")
-    private String ele7;
+    public String ele7;
     @CsvBindByName(column = "8")
-    private String ele8;
+    public String ele8;
 
     public static final String OR = " or ";
     public static final String BAR = "|";
@@ -68,7 +68,8 @@ public class ArmyBean {
     public static final String SCAT = ",";
 
     public String getElements() {
-       StringBuilder elements = new StringBuilder( ele0.replace("/",BAR) + "(Gen)" );
+       // StringBuilder elements = new StringBuilder( ele0.replace("/",BAR) + "(Gen)" );
+       StringBuilder elements = new StringBuilder( ele0 + "(Gen)" );
        if( null != ele1 && ele1.length() > 0) elements.append( SCAT ).append( ele1.replace(OR,BAR));
        if( null != ele2 && ele2.length() > 0) elements.append( SCAT ).append( ele2.replace(OR,BAR));
        if( null != ele3 && ele3.length() > 0) elements.append( SCAT ).append( ele3.replace(OR,BAR));

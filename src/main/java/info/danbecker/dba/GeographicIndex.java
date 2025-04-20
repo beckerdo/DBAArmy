@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 /**
  * This class is a way to report on armies by Group (AFRICA,AMERICA,...)
- * or by region (Arabia,Black Sea,...)'
+ * or by region (Arabia,Black Sea,...).
  * See page 135 of DBA 3.0 for index.
  * <p>
  * getRegions will return the names of the top level regions in the world.

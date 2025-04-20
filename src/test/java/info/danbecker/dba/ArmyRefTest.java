@@ -91,6 +91,17 @@ public class ArmyRefTest {
         ar = ArmyRef.parse("IV/4");
         assertEquals(4, ar.section());
 
+        assertEquals( 0, ArmyRef.getVersionNumber( null ));
+        assertEquals( 0, ArmyRef.getVersionNumber( "" ));
+        assertEquals( 0, ArmyRef.getVersionNumber( " " ));
+        assertEquals( 1, ArmyRef.getVersionNumber( "a" ));
+        assertEquals( 2, ArmyRef.getVersionNumber( "B" ));
+        assertEquals( 3, ArmyRef.getVersionNumber( "ceeee" ));
+
+        // Does it grab the ArmyRef from a large army variant name?
+        assertEquals( ArmyRef.parse("II/8a" ),ArmyRef.parse("II/8a Bruttian or Lucanian Armies 420-203 BC" ));
+        assertEquals( ArmyRef.parse("I/3" ),ArmyRef.parse("I/3 Nubian Army 3000 BC - 1480 BC" ));
+
         // Some illegal tests, bad section, army, group
         IllegalStateException ise = assertThrows(
                 IllegalStateException.class,
@@ -105,7 +116,7 @@ public class ArmyRefTest {
         ArmyRef expectedAr = ArmyRef.parse( "I/1" );
         List<ArmyRef> lar = ArmyRef.parseList("I/1");
         assertEquals(1, lar.size());
-        assertEquals(  expectedAr, lar.getFirst());
+        assertEquals( expectedAr, lar.getFirst());
         lar = ArmyRef.parseList("I/1");
         assertEquals(1, lar.size());
         assertEquals(  expectedAr, lar.getFirst());
@@ -145,6 +156,17 @@ public class ArmyRefTest {
 
         // Test String compare
         assertEquals( expectedArl, ArmyRef.toStringCompact( lar ));
+
+        // Test some empty lists.
+        assertIterableEquals( List.of(), ArmyRef.parseList( null ));
+        assertIterableEquals( List.of(), ArmyRef.parseList( "" ));
+        assertIterableEquals( List.of(), ArmyRef.parseList( " " ));
+
+        // Enemies/Allies quirky ones with parens ands ors.
+        assertIterableEquals( List.of( ArmyRef.parse("I/6b"), ArmyRef.parse("I/25a"), ArmyRef.parse("I/39a"), ArmyRef.parse("I/41a")),
+                ArmyRef.parseList( "I/6b or 25a or (39a and/or 41a)" )); // I/37a
+        assertIterableEquals( List.of(ArmyRef.parse("I/39b"), ArmyRef.parse("I/41a"), ArmyRef.parse("I/45"), ArmyRef.parse("I/51")),
+                ArmyRef.parseList( "I/(39b and/or 41a) or (45 or 51)" )); //I/37b
     }
 
     @Test

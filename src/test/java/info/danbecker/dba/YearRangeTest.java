@@ -44,6 +44,9 @@ public class YearRangeTest {
         rng = YearRange.parse( "144BC-79 ");
         assertEquals( YearType.parse("144BC"), rng.begin());
         assertEquals( YearType.parse("79BC"), rng.end());
+        rng = YearRange.parse( "70AD");
+        assertEquals( YearType.parse("70AD"), rng.begin());
+        assertEquals( YearType.parse("70AD"), rng.end());
 
         assertThrows(
             IllegalStateException.class,
@@ -55,6 +58,30 @@ public class YearRangeTest {
                 IllegalStateException.class,
                 () -> YearRange.parse( "-44 BC - -79AD "));
         System.out.println( e.getMessage());
+    }
+
+    @Test
+    public void testCirca()  {
+        YearRange twoDate = YearRange.parse( "CIRCA 1250BC - 1000BC" );
+        assertEquals( YearType.parse("1250BC"), twoDate.begin());
+        assertEquals( YearType.parse("1000BC"), twoDate.end());
+
+        YearRange oneDate = YearRange.parse( "CIRCA 2250BC" );
+        assertEquals( YearType.parse("2300BC"), oneDate.begin());
+        assertEquals( YearType.parse("2200BC"), oneDate.end());
+
+        oneDate = YearRange.parse( "CIRCA 797AD" );
+        assertEquals( YearType.parse("747AD"), oneDate.begin());
+        assertEquals( YearType.parse("847AD"), oneDate.end());
+
+        oneDate = YearRange.parse( "797AD" );
+        assertEquals( YearType.parse("797AD"), oneDate.begin());
+        assertEquals( YearType.parse("797AD"), oneDate.end());
+
+        // Will only parse first year range in variant name
+        YearRange varName = YearRange.parse( "I/4c Hurrian Army 1780-950 BC, or Early Kassite Army 1650-1595 or Nairi Army 1650 - 950 BC" );
+        assertEquals( YearType.parse("1780BC"), varName.begin() );
+        assertEquals( YearType.parse("950BC"), varName.end() );
     }
 
     @Test

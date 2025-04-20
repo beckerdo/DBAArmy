@@ -76,12 +76,12 @@ public enum ElementType {
         if (-1 < underscore) {
             // Name has underscore
             String name = name().replace("_", " ");
-            return name.substring(0, 1) +
+            return name.charAt(0) +
                     name.substring(1, underscore + 1).toLowerCase() +
-                    name.substring(underscore + 1, underscore + 2) +
+                    name.charAt(underscore + 1) +
                     name.substring(underscore + 2).toLowerCase();
         }
-        return name().substring(0, 1) + name().substring(1).toLowerCase();
+        return name().charAt(0) + name().substring(1).toLowerCase();
     }
 
     /**

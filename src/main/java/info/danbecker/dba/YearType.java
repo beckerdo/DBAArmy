@@ -50,7 +50,7 @@ public record YearType(int year, Era era) implements Comparable<YearType> {
 
     @Override
     public String toString() {
-        return Integer.toString( year ) + era.name();
+        return year + era.name();
     }
 
     public final static Pattern pattern = Pattern.compile( "\\s*(?<year>[\\d]+)\\s*(?<era>BC|AD)\\s*" );

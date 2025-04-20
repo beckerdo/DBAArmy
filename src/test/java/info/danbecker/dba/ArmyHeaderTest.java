@@ -4,11 +4,29 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static info.danbecker.dba.DBAUtil.*;
+import static info.danbecker.dba.ArmyHeader.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
-public class DBAUtilTest {
+public class ArmyHeaderTest {
+    @Test
+    public void testBasics() {
+        // II/73 OLD SAXON, FRISIAN, BAVARIAN, THURINGIAN & EARLY-ANGLO-SAXON 250AD - 804AD, 1, [Old Saxon, Frisian, Bavarian, Thuringian, Early-Anglo-Saxon] 5
+        ArmyHeader test = new ArmyHeader( ArmyRef.parse("II/73"),
+            "OLD SAXON, FRISIAN, BAVARIAN, THURINGIAN & EARLY-ANGLO-SAXON 250AD - 804AD", 1 );
+        assertEquals( "II/73", test.armyRef.toString());
+        assertEquals( "OLD SAXON, FRISIAN, BAVARIAN, THURINGIAN & EARLY-ANGLO-SAXON 250AD - 804AD", test.groupName );
+
+        assertIterableEquals( List.of( "Old Saxon", "Frisian", "Bavarian", "Thuringian", "Early-Anglo-Saxon"),
+            test.names );
+        assertIterableEquals( List.of( YearRange.parse("250AD-804AD" )), test.years );
+        assertEquals( "Historical description", test.historicalDesc );
+        assertIterableEquals( List.of( "Cambridge Ancient History Vol. 1 Part 2" ), test.references );
+
+        assertEquals( 1, test.variantCount );
+        assertEquals( "II/73 OLD SAXON, FRISIAN, BAVARIAN, THURINGIAN & EARLY-ANGLO-SAXON 250AD - 804AD", test.toString());
+    }
+
     @Test
     public void testGetNameNoDates() {
         String name = "LATE FRED CLAN";
@@ -32,12 +50,13 @@ public class DBAUtilTest {
 
     @Test
     public void testGetNames() {
-        assertIterableEquals(List.of("NUBIAN"),
+        assertIterableEquals(List.of(ArmyHeader.toDisplayCase("NUBIAN")),
             getNames("NUBIAN 3000BC - 1480BC"));
-        assertIterableEquals(List.of("EARLY SUMERIAN", "THE \"GREAT REVOLT\""),
+        assertIterableEquals(List.of(ArmyHeader.toDisplayCase("EARLY SUMERIAN"), ArmyHeader.toDisplayCase("THE \"GREAT REVOLT\"")),
             getNames( "EARLY SUMERIAN 3000BC - 2334BC & THE \"GREAT REVOLT\" CIRCA 2250BC" ));
-        assertIterableEquals(List.of("OLD SAXON", "FRISIAN", "BAVARIAN", "THURINGIAN", "EARLY-ANGLO-SAXON"),
-                getNames( "OLD SAXON, FRISIAN, BAVARIAN, THURINGIAN & EARLY-ANGLO-SAXON 250AD - 804AD" ));
+        assertIterableEquals(List.of(ArmyHeader.toDisplayCase("OLD SAXON"), ArmyHeader.toDisplayCase("FRISIAN"), ArmyHeader.toDisplayCase("BAVARIAN"),
+            ArmyHeader.toDisplayCase("THURINGIAN"), ArmyHeader.toDisplayCase("EARLY-ANGLO-SAXON")),
+            getNames( "OLD SAXON, FRISIAN, BAVARIAN, THURINGIAN & EARLY-ANGLO-SAXON 250AD - 804AD" ));
     }
 
     @Test
@@ -62,15 +81,15 @@ public class DBAUtilTest {
 
     @Test
     public void testGetDates() {
-        assertIterableEquals(List.of("3000BC - 1480BC"),
+        assertIterableEquals(List.of(YearRange.parse("3000BC-1480BC") ),
                 getDates("NUBIAN 3000BC - 1480BC"));
-        assertIterableEquals(List.of( "3000BC - 2334BC", "CIRCA 2250BC"),
+        assertIterableEquals(List.of( YearRange.parse("3000BC-2334BC"), YearRange.parse("CIRCA 2250BC")),
                 getDates( "EARLY SUMERIAN 3000BC - 2334BC & THE \"GREAT REVOLT\" CIRCA 2250BC" ));
-        assertIterableEquals(List.of("250AD - 804AD"),
+        assertIterableEquals(List.of(YearRange.parse("250AD-804AD")),
                 getDates( "OLD SAXON, FRISIAN, BAVARIAN, THURINGIAN & EARLY-ANGLO-SAXON 250AD - 804AD" ));
-        assertIterableEquals(List.of("1419AD - 1434AD", "1464AD - 1471AD"),
+        assertIterableEquals(List.of(YearRange.parse("1419AD-1434AD"), YearRange.parse("1464AD-1471AD")),
                 getDates( "HUSSITE 1419AD - 1434AD & NAME 1464AD - 1471AD" )); // list of named date ranges
-        assertIterableEquals(List.of("1419AD - 1434AD", "1464AD - 1471AD"),
+        assertIterableEquals(List.of(YearRange.parse("1419AD-1434AD"), YearRange.parse("1464AD-1471AD")),
                 getDates( "HUSSITE 1419AD - 1434AD & 1464AD - 1471AD" )); // list of named and unamed date ranges
     }
 }

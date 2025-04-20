@@ -13,7 +13,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 /** Test pieces of ANTLR lexer and parser for use with DBA. */
-public class DBAArmyParserTest {
+public class TroopDefParserTest {
     @Test
     public void testLexer() {
         System.out.println( "Using Java version=" + Runtime.version() );

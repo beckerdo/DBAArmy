@@ -9,9 +9,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import static java.lang.String.format;
@@ -19,46 +16,43 @@ import static java.lang.String.format;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
-import info.danbecker.csv.ArmyBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import info.danbecker.csv.ArmyHeaderBean;
+import info.danbecker.csv.ArmyVariantBean;
 
 /**
- * A small utility for moving a list of
- * De Bellis Antiquatis (DBA) army lists from
- * a CSV data base to a JSON representation.
+ * A utility for reading, writing, and analyzing
+ * De Bellis Antiquatis (DBA) army lists
  * <p>
  * Some things to do with the utility:
  * <ul>
- * <li>Convert an army CSV to JSON.
- * <li>Enumerate all permutations of an army list.
- * <li>See whether an army instance is an instance of an army.
+ * <li>Lookup armies by name, reference number, geography, etc.
+ * <li>Enumerate all permutations of an army troop definition.
+ * <li>Test whether an army instance fits a troop definition.
  * <li>Create lists of allied and enemy armies (draw graph? DBA dot diagrams).
  * <li>Create lists of armies with most enemies and allies.
  * <li>Pick a date, show armies, potential battles for that time frame.
+ * <li>Input and output army info via CSV or JSON.
  * </ul>
- * <p>
- * {@code @TODO} Create class to unite ArmyRef with Army.
- * </p>
  * <p>
  * Lots of CSV ideas taken from
  * <a href="https://mkyong.com/java/how-to-read-and-parse-csv-file-in-java/">Mkyong.com</a>.
  *
  * @author <a href="mailto://dan@danbecker.info>Dan Becker</a>
  */
-public class DBAUtil {
+public class ArmyList {
     public static final String PATH_DEFAULT = "e:\\hobbies\\games\\miniatures\\DBA\\";
     public static final String ARMY_HEADER_DEFAULT = PATH_DEFAULT + "DBA3.0-ArmyGroupNames.csv";
     public static final String ARMY_DEFAULT = PATH_DEFAULT + "DBAArmies3.0-Export.csv";
     public static final String OUTPUT_DEFAULT = PATH_DEFAULT + "DBAArmies3.0.json";
 
-    static Logger LOGGER = Logger.getLogger(DBAUtil.class.getName());
+    static Logger LOGGER = Logger.getLogger(ArmyList.class.getName());
 
     // Some configuration parameters via JCommander.org
     public static class Options {
-        @Parameter(names = "-inPath", description = "Input path. A directory containing books.")
+        @Parameter(names = "-inPath", description = "Input path. A directory containing input files.")
         public String inPath = "";
-        @Parameter(names = "-inFile", description = "Input file. A file with notes and highlights.")
+        @Parameter(names = "-inFile", description = "Input file. A file with army list input data.")
         public String inFile = "";
         @Parameter(names = "-outPath", description = "Explicit text for output file name.")
         public String outPath = "";
@@ -70,8 +64,17 @@ public class DBAUtil {
         public String nameEndsWith = ".html";
     }
 
-    public static HashMap<String, ArmyBean> DBA3Armies = new HashMap<>();
+    // Armies is the main container for all armies.
+    public static HashMap<ArmyRef,Army> Armies = new HashMap<>();
+    // Section might be needed, but all data is available in Armies.
+    // public static List<TroopDef> Sections = new ArrayList<>();
 
+    /**
+     * main method reads the parameters, loads the armies, performs actions on the data.
+     *
+     * @param args provides the option parameters
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException{
         LOGGER.setLevel( Level.ALL );
         System.setProperty("java.util.logging.SimpleFormatter.format","%1$tF %1$tT %4$s: %5$s%6$s");
@@ -84,40 +87,37 @@ public class DBAUtil {
             processCommandOptions( args, opt, inputFiles );
         }
 
+        // Read army headers and add to ArmyList.
+        @SuppressWarnings("unchecked")
         List<ArmyHeaderBean> headerBeans = new CsvToBeanBuilder(new FileReader(ARMY_HEADER_DEFAULT))
                 .withType(ArmyHeaderBean.class)
                 .build()
                 .parse();
-
         headerBeans.forEach( b-> {
-            String groupName = b.name;
-            List<String> names = getNames( groupName );
-            System.out.format( "%s, %d, %s %d\n", groupName, b.varCount, names.toString(),
-                names.size() );
-            }
-        );
+            ArmyHeader armyHeader = new ArmyHeader( ArmyRef.parse( b.armyRef ), b.name, b.varCount );
+            // System.out.format( "%s %s, %d, %s %d\n", armyHeader.armyRef, armyHeader.groupName, armyHeader.variantCount,
+            //     armyHeader.names.toString(), armyHeader.names.size());
+            Armies.put(armyHeader.armyRef, new Army( armyHeader, new ArrayList<>() ));
+        });
 
-        // headerBeans.forEach(System.out::println);
-//        beans.forEach( b -> {
-//                    DBA3Armies.put( b.getRef(), b );
-//                    System.out.println( b );
-//                }
-//        );
+        // Read army variants and add to ArmyList.
+        @SuppressWarnings("unchecked")
+        List<ArmyVariantBean> variantBeans = new CsvToBeanBuilder(new FileReader(ARMY_DEFAULT))
+                .withType(ArmyVariantBean.class)
+                .build()
+                .parse();
+        variantBeans.forEach( b-> {
+            ArmyRef armyRef = new ArmyRef( b.book, b.armyNum, 0 );
+            ArmyRef varRef = new ArmyRef( b.book, b.armyNum, ArmyRef.getVersionNumber( b.var ) );
+            Army army = Armies.get( armyRef );
+            if ( null == army ) throw new IllegalArgumentException( "Could not find armyRef " + armyRef );
+            System.out.format( "ArmyRef=%s\n", varRef );
 
-//        List<ArmyBean> beans = new CsvToBeanBuilder(new FileReader(ARMY_DEFAULT))
-//                .withType(ArmyBean.class)
-//                .build()
-//                .parse();
-//        beans.forEach(System.out::println);
-//        beans.forEach( b -> {
-//                    DBA3Armies.put( b.getRef(), b );
-//                    System.out.println( b );
-//                }
-//        );
-//        String ref = "III/22";
-//        System.out.println( ref + "=" + DBA3Armies.get( ref ));
-//        ref = "III/22a";
-//        System.out.println( ref + "=" + DBA3Armies.get( ref ));
+            ArmyVariant armyVariant = new ArmyVariant( varRef, b.name, b.getElements(),
+                            b.topo, b.agg, b.enemies, b.allies);
+            army.getVariants().add( armyVariant );
+            System.out.format( "%s, E=%s A=%s\n", armyVariant.variantName, armyVariant.enemies.toString(), armyVariant.allies.toString());
+        });
     }
 
     /**
@@ -199,65 +199,5 @@ public class DBAUtil {
     /** Change boolean to "is" or "is not" String. */
     public static String isIsNot( boolean is ) {
         return is ? "is" : "is not";
-    }
-
-    public static List<String> getNames( String groupName ) {
-        Stream<String> stream = Pattern.compile("[,&]").splitAsStream( groupName );
-        return stream
-            .map(String::trim)
-            .filter( str -> str.matches("^[A-Z -].*"))
-            .map( DBAUtil::getNameNoDates) // remove dates, ranges, and CIRCAS
-            .toList();
-    }
-
-    public static String getNameNoDates(String nameWithDate ) {
-        int loc = nameWithDate.indexOf( "CIRCA" );
-        if (0 < loc ) {
-           return nameWithDate.substring( 0, loc - 1);
-        }
-        // Look for numbers in the name
-        Matcher matcher = Pattern.compile("\\d+").matcher(nameWithDate);
-        if (matcher.find()) {
-            loc = nameWithDate.indexOf(matcher.group());
-            if (0 < loc ) {
-                return nameWithDate.substring( 0, loc - 1);
-            }
-
-        }
-        return nameWithDate;
-    }
-
-    /**
-     * Takes a group name, splits it into a list of ,& separated items,
-     * removes the names, returns a list of date ranges.
-     * @param groupName
-     * @return
-     */
-    public static List<String> getDates( String groupName ) {
-        Stream<String> stream = Pattern.compile("[,&]").splitAsStream( groupName);
-        return stream
-                .map(String::trim)
-                // .filter( str -> str.matches("^[A-Z -].*"))
-                .map( DBAUtil::getDatesNoNames) // remove group names
-                .filter( str -> !str.isEmpty() ) // filter out lack of date
-                .toList();
-    }
-
-    public static String getDatesNoNames(String nameWithDate ) {
-        int loc = nameWithDate.indexOf( "CIRCA" );
-        if (0 < loc ) {
-            return nameWithDate.substring( loc );
-        }
-
-        // Look for numbers in the name
-        Matcher matcher = Pattern.compile("\\d+").matcher(nameWithDate);
-        if (matcher.find()) {
-            loc = nameWithDate.indexOf(matcher.group());
-            if (0 <= loc ) {
-                // System.out.println( nameWithDate.substring( loc ) );
-                return nameWithDate.substring( loc );
-            }
-        }
-        return "";
     }
 }

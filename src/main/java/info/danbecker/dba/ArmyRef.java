@@ -1,5 +1,6 @@
 package info.danbecker.dba;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -97,14 +98,29 @@ public record ArmyRef(int section, int number, int version) implements Comparabl
         return getVersionLetter( version );
     }
 
+    /** Given [A-Z,a-z]+ returns 1 based numeral (a=1, b-2, c=3,...)
+     * A null or blank or other char returns 0.
+     * Only the first character is evaluated, others ignored
+     * @param versionChar a character to be converted to 1-based number
+     * @return number representing the char
+     */
+    public static int getVersionNumber( String versionChar ) {
+        final String alphabet = " abcdefghijklmnopqrstuvwxyz";
+        if ( null == versionChar || versionChar.isEmpty() )
+            return 0;
+        return alphabet.indexOf(versionChar.toLowerCase().charAt(0));
+    }
+
     @Override
     public String toString() {
         return format("%s/%d%s", ROMAN_NUM[ section ], number, getVersionLetter() );
     }
 
     /** Parse a single ArmyRef from the String.
+     * This pattern just keys on the section, number, and optional version.
+     * All white space and following characters are ignored.
      */
-    public final static Pattern refPattern = Pattern.compile( "\\s*(?<sec>[IV]+)/(?<num>[\\d]+)(?<ver>[a-z]?)\\s*" );
+    public final static Pattern refPattern = Pattern.compile( "\\s*(?<sec>[IV]+)/(?<num>[\\d]+)(?<ver>[a-z]?).*" );
     public static ArmyRef parse( String str ) throws IllegalStateException {
         try {
             Matcher matcher = refPattern.matcher(str);
@@ -133,10 +149,21 @@ public record ArmyRef(int section, int number, int version) implements Comparabl
      * String may have omitted book such as
      * "I/47,II/18e,31c,31f,31h,31i,31j".
      * <p>
+     * Can handle a null or empty string in which case an empty list is returned
+     * <p>
+     * Allies and Enemies lists are simplified. Items like "I/6b or 25a or (39a and/or 41a)"
+     * have parens, and/or, or, removed
+     * <p>
      * This method is the recipricol of {@link #toStringCompact}.
      */
     public final static Pattern listPattern = Pattern.compile( "\\s*(?<ref>[IV/]*[\\d]+[a-z]?)[\\s,]*");
     public static List<ArmyRef> parseList( String str ) throws IllegalStateException {
+        if ( null == str || str.isEmpty() )
+            return new ArrayList<>();
+        str = str.replaceAll( "[()]", "");
+        str = str.replaceAll( "and/or", "");
+        str = str.replaceAll( "and", "");
+        str = str.replaceAll( "or", "");
         Matcher matcher = listPattern.matcher( str );
         // boolean b = matcher.find(); // must find or namedGroups to get groups
 
