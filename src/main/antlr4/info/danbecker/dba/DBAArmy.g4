@@ -29,7 +29,7 @@ type:
     light_horse |
     scythed_chariots |
     camelry |
-    mounted_infantry |
+    mounted_inf |
     spears |
     pikes |
     blades |
@@ -48,7 +48,7 @@ cavalry: 'Cv' | '6Cv' | 'LCh';
 light_horse: 'LH' | 'LCm';
 scythed_chariots: 'SCh';
 camelry: 'Cm';
-mounted_infantry: 'Mtd-X';
+mounted_inf: 'Mtd-3Bw'| 'Mtd-4Bw'| 'Mtd-3Cb'| 'Mtd-4Cb'| 'Mtd-3Lb'| 'Mtd-4Lb';
 spears: '8Sp' | 'Sp';
 pikes: '4Pk' | '3Pk' | 'Pk';
 blades: '4Bd' | '3Bd' | '6Bd' | 'Bd';
@@ -66,6 +66,7 @@ war_wagons: 'WWg';
 // Lexer rules are uppercase.
 LIST_DELIM: ',';
 MULTIPLE_DELIM: 'x';
+MOUNTEDINF_DELIM: '-';
 DISMOUNT_DELIM: '//';
 EITHER_DELIM: '/';
 OR_DELIM: 'or';

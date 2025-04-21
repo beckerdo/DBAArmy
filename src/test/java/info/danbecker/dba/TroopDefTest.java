@@ -234,6 +234,21 @@ public class TroopDefTest {
     }
 
     @Test
+    public void testMatchMountedInfantry() {
+        assertTrue(new TroopDef("Mtd-3Bw").matches("Mtd-3Bw")); // number match
+        assertTrue(new TroopDef("Mtd-4Bw").matches("Mtd-4Bw")); // number match
+        assertTrue(new TroopDef("Mtd-4Lb").matches("Mtd-4Lb")); // number match
+        assertTrue(new TroopDef("Mtd-4Cb").matches("Mtd-4Cb")); // number match
+
+        assertTrue(new TroopDef("2xMtd-3Bw").matches("2xMtd-3Bw")); // number match
+        assertTrue(new TroopDef("Mtd-3Bw/Mtd-4Bw").matches("Mtd-3Bw")); // number match
+        assertTrue(new TroopDef("Mtd-3Bw/Mtd-4Bw").matches("Mtd-4Bw")); // number match
+        assertTrue(new TroopDef("(Mtd-3Bw)").matches("Mtd-3Bw")); // number match
+        assertTrue(new TroopDef("Mtd-3Bw or 4Bw").matches("Mtd-3Bw")); // number match
+        assertFalse(new TroopDef("Mtd-3Bw").matches("Mtd-8Bw")); // number match
+    }
+
+    @Test
     public void testMatchMultiple() {
         assertTrue(new TroopDef("1xPs").matches("Ps")); // number match
         assertFalse(new TroopDef("1xWb").matches("Ps")); // number match

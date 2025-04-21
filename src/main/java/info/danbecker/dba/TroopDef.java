@@ -426,7 +426,7 @@ public class TroopDef implements Comparable<TroopDef> {
             // might want to match 3Wb or 4Wb and 3Wb/4Wb
             case DBAArmyParser.ExprMultipleContext mult -> {
                 System.out.println("getAllExpr exprMultiple");
-                 return List.of( mult.expr() );
+                return List.of( mult.expr() );
             }
             case DBAArmyParser.ExprTypeContext exprType -> {
                 return List.of( exprType );
