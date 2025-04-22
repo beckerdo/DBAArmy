@@ -111,12 +111,12 @@ public class ArmyList {
             ArmyRef varRef = new ArmyRef( b.book, b.armyNum, ArmyRef.getVersionNumber( b.var ) );
             Army army = Armies.get( armyRef );
             if ( null == army ) throw new IllegalArgumentException( "Could not find armyRef " + armyRef );
-            System.out.format( "ArmyRef=%s\n", varRef );
+            System.out.print( varRef );
 
             ArmyVariant armyVariant = new ArmyVariant( varRef, b.name, b.getElements(),
                             b.topo, b.agg, b.enemies, b.allies);
             army.getVariants().add( armyVariant );
-            System.out.format( "%s, E=%s A=%s\n", armyVariant.variantName, armyVariant.enemies.toString(), armyVariant.allies.toString());
+            System.out.format( " %s, E=%s A=%s%n", armyVariant.variantName, armyVariant.enemies.toString(), armyVariant.allies.toString());
         });
     }
 
@@ -128,7 +128,7 @@ public class ArmyList {
      * throw java.nio.file.InvalidPathException: Illegal char <:> at index 2: /E:\workDirectory\
      * So there is some code to remove the leading / before the drive letter and colon.
      */
-    public static void processCommandOptions( String[] args, Options opt, List<String> inputFiles ) throws IOException {
+    public static void processCommandOptions( String[] args, Options opt, List<String> inputFiles ) {
         JCommander.newBuilder()
                 .addObject(opt)
                 .build()

@@ -54,7 +54,6 @@ public record YearType(int year, Era era) implements Comparable<YearType> {
     }
 
     public final static Pattern pattern = Pattern.compile( "\\s*(?<year>[\\d]+)\\s*(?<era>BC|AD)\\s*" );
-
     public static YearType parse(String str) {
         Matcher matcher = pattern.matcher( str );
         boolean b = matcher.find(); // must find or namedGroups to get groups

@@ -52,16 +52,16 @@ public class YearRangeTest {
             IllegalStateException.class,
             () -> YearRange.parse( "44-79"));
         assertThrows(
-                IllegalStateException.class,
-                () -> YearRange.parse( " BC - AD "));
-        IllegalStateException e = assertThrows(
-                IllegalStateException.class,
-                () -> YearRange.parse( "-44 BC - -79AD "));
-        System.out.println( e.getMessage());
+            IllegalStateException.class,
+            () -> YearRange.parse( " BC - AD "));
+        // Negatives are skipped just as are hyphens "Marco-Manni 44BC"
+        // IllegalStateException e = assertThrows(
+        //     IllegalStateException.class,
+        //     () -> YearRange.parse( "-44 BC - -79AD "));
     }
 
     @Test
-    public void testCirca()  {
+    public void testTrickyDates()  {
         YearRange twoDate = YearRange.parse( "CIRCA 1250BC - 1000BC" );
         assertEquals( YearType.parse("1250BC"), twoDate.begin());
         assertEquals( YearType.parse("1000BC"), twoDate.end());
@@ -74,14 +74,22 @@ public class YearRangeTest {
         assertEquals( YearType.parse("747AD"), oneDate.begin());
         assertEquals( YearType.parse("847AD"), oneDate.end());
 
-        oneDate = YearRange.parse( "797AD" );
+        oneDate = YearRange.parse( "after 797AD" );
         assertEquals( YearType.parse("797AD"), oneDate.begin());
-        assertEquals( YearType.parse("797AD"), oneDate.end());
+        assertEquals( YearType.parse("1580AD"), oneDate.end());
+
+        oneDate = YearRange.parse( "before 500BC" );
+        assertEquals( YearType.parse("3000BC"), oneDate.begin());
+        assertEquals( YearType.parse("500BC"), oneDate.end());
 
         // Will only parse first year range in variant name
-        YearRange varName = YearRange.parse( "I/4c Hurrian Army 1780-950 BC, or Early Kassite Army 1650-1595 or Nairi Army 1650 - 950 BC" );
+        YearRange varName = YearRange.parse( "Hurrian Army 1780-950 BC, or Early Kassite Army 1650-1595 or Nairi Army 1650 - 950 BC" );
         assertEquals( YearType.parse("1780BC"), varName.begin() );
         assertEquals( YearType.parse("950BC"), varName.end() );
+
+        varName = YearRange.parse( "Any Arabo-Aramean Army 126 BC" );
+        assertEquals( YearType.parse("126BC"), varName.begin() );
+        assertEquals( YearType.parse("126BC"), varName.end() );
     }
 
     @Test

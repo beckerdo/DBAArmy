@@ -1,5 +1,7 @@
 package info.danbecker.dba;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,6 +13,9 @@ import java.util.regex.Pattern;
  */
 public record YearRange(YearType begin, YearType end) implements Comparable<YearRange> {
     public static String RANGE_DELIM = "-";
+
+    public final static YearType EARLY_YEAR = new YearType( 3000, YearType.Era.BC );
+    public final static YearType LATE_YEAR = new YearType( 1580, YearType.Era.AD );
 
     public YearRange {
         if (0 < begin.compareTo(end))
@@ -53,49 +58,74 @@ public record YearRange(YearType begin, YearType end) implements Comparable<Year
     // V/6a Early Bedouin Army 3000 BC to 1001 BC
     // 1/25 BOSPORAN 310 BC - 107 BC & 10 BC - 375 AD
     // CIRCA 2250BC (becomes 2200BC - 2300BC)
-    public final static Pattern pattern =
-        Pattern.compile( "\\s*(?<beginY>[\\d]+)\\s*(?<beginE>(BC|AD)?)\\s*-\\s*(?<endY>[\\d]+)\\s*(?<endE>(BC|AD)?)\\s*");
-
+    public final static Pattern yearPattern =
+        // This pattern matches exactly 2 dates in a range
+        // Pattern.compile( "\\s*(?<beginY>[\\d]+)\\s*(?<beginE>(BC|AD)?)\\s*-\\s*(?<endY>[\\d]+)\\s*(?<endE>(BC|AD)?)\\s*");
+        // This pattern matches modifiers with one date and multiple groups.
+        Pattern.compile( "\\s*(?<modifier>CIRCA|circa|BEFORE|before|AFTER|after)*\\s*(?<year>[\\d]+)\\s*(?<era>(BC|AD)?)\\s*");
     public static YearRange parse(String str) {
-        if ( str.startsWith( "CIRCA ")) {
-            str = str.substring( "CIRCA ".length() );
-            if (!str.contains( "-" )) {
-                // One date, make a range.
-                YearType year = YearType.parse( str );
-                if (year.era() == YearType.Era.AD)
-                    return new YearRange(
-                            new YearType(year.year() - 50, year.era()),
-                            new YearType(year.year() + 50, year.era()));
-                else
-                    return new YearRange(
-                            new YearType(year.year() + 50, year.era()),
-                            new YearType(year.year() - 50, year.era()));
+        Matcher matcher = yearPattern.matcher( str );
+        // boolean b = matcher.find(); // must find or namedGroups to get groups
+        int matchCount = 0;
+
+        List<String> years = new ArrayList<>();
+        List<String> modifiers = new ArrayList<>();
+        while( matcher.find() ) {
+            String modifier = matcher.group("modifier");
+            modifier = (null == modifier) ? "" : modifier.toLowerCase();
+            String year = matcher.group("year");
+            String era = matcher.group("era");
+
+            years.add( year + era ); // some fixups might come later
+            modifiers.add( modifier );
+            matchCount++;
+        }
+        // System.out.format( "Input %s: dates %s, mods %s%n", str, years, modifiers );
+
+        // Lots of fix ups for missing eras,
+        return switch (matchCount) {
+            case 0 -> throw new IllegalStateException( "Found zero years in \"" + str + "\"");
+            case 1 -> {
+                if ( "before".equals( modifiers.getFirst()))
+                    yield new YearRange( EARLY_YEAR, YearType.parse( years.getFirst()));
+                else if ( "after".equals( modifiers.getFirst()))
+                    yield new YearRange( YearType.parse( years.getFirst()), LATE_YEAR );
+                else if ( "circa".equals( modifiers.getFirst())) {
+                    YearType year = YearType.parse( years.getFirst() );
+                    if ( "AD".equals( year.era().name() )) {
+                        yield new YearRange( new YearType( year.year()-50, year.era() ), new YearType( year.year()+50, year.era() ) );
+                    } else {
+                        yield new YearRange( new YearType( year.year()+50, year.era() ), new YearType( year.year()-50, year.era() ) );
+                    }
+                }
+                yield new YearRange( years.getFirst(), years.getFirst());
             }
-        }
-        // No circa, no range
-        if (!str.contains( "-" )) {
-            // One date, make a range.
-            YearType year = YearType.parse( str );
-            return new YearRange( year, year );
-        }
+            // Options for 2 or more dates:
+            //    -parse first two
+            //    -parse first and last (implemented)
+            //    -throw IllegalStateException
+            //    -parse list of dates, two at a time.
+            default -> {
+                yield fillMissingEra( years.getFirst(), years.getLast() );
+            }
+        };
+    }
 
-        Matcher matcher = pattern.matcher( str );
-        boolean b = matcher.find(); // must find or namedGroups to get groups
-
-        String beginY = matcher.group("beginY");
-        String beginE = matcher.group("beginE");
-        String endY = matcher.group("endY");
-        String endE = matcher.group("endE");
-
-        if ( beginY.isBlank() && endY.isBlank() )
-            throw new IllegalStateException( "Begin and end years blank");
-        if ( beginE.isBlank() && endE.isBlank() )
-            throw new IllegalStateException( "Begin and end eras blank");
-        if ( beginE.isBlank()) beginE = endE;
-        if ( endE.isBlank()) endE = beginE;
-        return new YearRange(
-            new YearType(Integer.parseInt(beginY) , YearType.Era.valueOf( beginE )),
-            new YearType(Integer.parseInt(endY) , YearType.Era.valueOf( endE ))
-        );
+    /**
+     * If needed, fills in missing eras to the begin or end year.
+     * @param yearB beginning year for range
+     * @param yearE ending year for range
+     * @return YearRange with complete eras
+     */
+    public static YearRange fillMissingEra( String yearB, String yearE ) {
+        if ( yearB.contains("BC") && !yearE.contains("BC") && !yearE.contains( "AD" ))
+            return new YearRange( yearB, yearE + "BC");
+        else if ( yearB.contains("AD") && !yearE.contains("BC") && !yearE.contains( "AD" ))
+            return new YearRange( yearB, yearE + "AD");
+        else if ( yearE.contains("BC") && !yearB.contains("BC") && !yearB.contains( "AD" ))
+            return new YearRange( yearB + "BC", yearE);
+        else if ( yearE.contains("AD") && !yearB.contains("BC") && !yearB.contains( "AD" ))
+            return new YearRange( yearB + "AD", yearE);
+        return new YearRange( yearB, yearE );
     }
 }
