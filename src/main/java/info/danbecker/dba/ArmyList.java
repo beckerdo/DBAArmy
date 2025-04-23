@@ -3,7 +3,6 @@ package info.danbecker.dba;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,6 +47,8 @@ public class ArmyList {
     public static final String OUTPUT_DEFAULT = "DBA3.0-ArmyOutput.json";
 
     static Logger LOGGER = Logger.getLogger(ArmyList.class.getName());
+    // Armies is the main container for all armies.
+    public static HashMap<ArmyRef,Army> Armies = new HashMap<>();
 
     // Some configuration parameters via JCommander.org
     public static class Options {
@@ -65,18 +66,13 @@ public class ArmyList {
         public String nameEndsWith = ".html";
     }
 
-    // Armies is the main container for all armies.
-    public static HashMap<ArmyRef,Army> Armies = new HashMap<>();
-    // Section might be needed, but all data is available in Armies.
-    // public static List<TroopDef> Sections = new ArrayList<>();
-
     /**
      * main method reads the parameters, loads the armies, performs actions on the data.
      *
      * @param args provides the option parameters
-     * @throws IOException
+     * @throws IOException when files not readable
      */
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws IOException {
         LOGGER.setLevel( Level.ALL );
         System.setProperty("java.util.logging.SimpleFormatter.format","%1$tF %1$tT %4$s: %5$s%6$s");
         LOGGER.info( "DBAUtil 1.0.0 by Dan Becker\n" );
@@ -88,16 +84,18 @@ public class ArmyList {
             processCommandOptions( args, opt, inputFiles );
         }
 
-        String rootStr = ".";
-        Path rootPath = Paths.get( rootStr ).normalize().toAbsolutePath();
+        // Some app context
+        Path rootPath = Paths.get( "." ).normalize().toAbsolutePath();
         boolean isRootPathReadable = Files.isReadable( rootPath );
-        System.out.printf( "Root of app \"%s\" %s readable, name=%s%n", rootPath, isIsNot( isRootPathReadable ), rootPath );
         boolean isRootPathDir = Files.isDirectory( rootPath );
-        System.out.printf( "Root of app \"%s\" %s directory.%n", rootPath, isIsNot( isRootPathDir ));
+        System.out.printf( "App context is \"%s\" %s readable, %s directory%n", rootPath, isIsNot( isRootPathReadable ), isIsNot( isRootPathDir ) );
 
         // Read army headers and add to ArmyList.
+        Path inPath = Paths.get( PATH_DEFAULT, ARMY_HEADER_DEFAULT );
+        boolean inPathReadable = Files.isReadable( inPath );
+        System.out.printf( "Reading headers from \"%s\" %s readable%n", inPath, isIsNot( inPathReadable ));
         @SuppressWarnings("unchecked")
-        List<ArmyHeaderBean> headerBeans = new CsvToBeanBuilder(new FileReader( Paths.get( rootStr, PATH_DEFAULT, ARMY_HEADER_DEFAULT).toString() ))
+        List<ArmyHeaderBean> headerBeans = new CsvToBeanBuilder(new FileReader( inPath.toString() ))
                 .withType(ArmyHeaderBean.class)
                 .build()
                 .parse();
@@ -109,8 +107,11 @@ public class ArmyList {
         });
 
         // Read army variants and add to ArmyList.
+        inPath = Paths.get( PATH_DEFAULT, ARMY_DEFAULT );
+        inPathReadable = Files.isReadable( inPath );
+        System.out.printf( "Reading variants from \"%s\" %s readable%n", inPath, isIsNot( inPathReadable ));
         @SuppressWarnings("unchecked")
-        List<ArmyVariantBean> variantBeans = new CsvToBeanBuilder(new FileReader(Paths.get( rootStr, PATH_DEFAULT, ARMY_DEFAULT).toString()))
+        List<ArmyVariantBean> variantBeans = new CsvToBeanBuilder(new FileReader( inPath.toString()))
                 .withType(ArmyVariantBean.class)
                 .build()
                 .parse();
