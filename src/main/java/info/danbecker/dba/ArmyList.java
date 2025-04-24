@@ -26,7 +26,7 @@ import info.danbecker.csv.ArmyVariantBean;
  * <p>
  * Some things to do with the utility:
  * <ul>
- * <li>Lookup armies by name, reference number, geography, etc.
+ * <li>Lookup armies by reference number, name, year, geography, aggression, troop def, etc.
  * <li>Enumerate all permutations of an army troop definition.
  * <li>Test whether an army instance fits a troop definition.
  * <li>Create lists of allied and enemy armies (draw graph? DBA dot diagrams).
@@ -42,6 +42,7 @@ import info.danbecker.csv.ArmyVariantBean;
  */
 public class ArmyList {
     public static final String PATH_DEFAULT = "src/main/resources";
+    public static final String PATH_DELIM = "/";
     public static final String ARMY_HEADER_DEFAULT = "DBA3.0-ArmyGroupNames.csv";
     public static final String ARMY_DEFAULT = "DBA3.0-ArmyVariants.csv";
     public static final String OUTPUT_DEFAULT = "DBA3.0-ArmyOutput.json";
@@ -120,12 +121,12 @@ public class ArmyList {
             ArmyRef varRef = new ArmyRef( b.book, b.armyNum, ArmyRef.getVersionNumber( b.var ) );
             Army army = Armies.get( armyRef );
             if ( null == army ) throw new IllegalArgumentException( "Could not find armyRef " + armyRef );
-            System.out.print( varRef );
+            // System.out.print( varRef );
 
             ArmyVariant armyVariant = new ArmyVariant( varRef, b.name, b.getElements(),
                             b.topo, b.agg, b.enemies, b.allies);
             army.getVariants().add( armyVariant );
-            System.out.format( " %s, E=%s A=%s%n", armyVariant.variantName, armyVariant.enemies.toString(), armyVariant.allies.toString());
+            // System.out.format( " %s, E=%s A=%s%n", armyVariant.variantName, armyVariant.enemies.toString(), armyVariant.allies.toString());
         });
     }
 
@@ -137,37 +138,35 @@ public class ArmyList {
      * throw java.nio.file.InvalidPathException: Illegal char <:> at index 2: /E:\workDirectory\
      * So there is some code to remove the leading / before the drive letter and colon.
      */
-    public static void processCommandOptions( String[] args, Options opt, List<String> inputFiles ) {
+    public static void processCommandOptions( String[] args, Options opts, List<String> inputFiles ) {
         JCommander.newBuilder()
-                .addObject(opt)
+                .addObject(opts)
                 .build()
                 .parse(args);
 
-        String pathDelim = "/";
-
         boolean IS_WINDOWS = System.getProperty( "os.name" ).contains( "indow" );
-        if ( IS_WINDOWS && opt.inPath.startsWith( pathDelim ))
-            opt.inPath = opt.inPath.substring(1);
-        boolean isInPathReadable = Files.isReadable( Paths.get( opt.inPath ));
-        System.out.printf( "Input path \"%s\" %s readable.%n", opt.inPath, isIsNot( isInPathReadable ));
-        boolean isInPathDir = Files.isDirectory( Paths.get( opt.inPath ));
-        System.out.printf( "Input path \"%s\" %s a directory.%n", opt.inPath, isIsNot( isInPathDir ));
+        if ( IS_WINDOWS && opts.inPath.startsWith( PATH_DELIM ))
+            opts.inPath = opts.inPath.substring(1);
+        boolean isInPathReadable = Files.isReadable( Paths.get( opts.inPath ));
+        System.out.printf( "Input path \"%s\" %s readable.%n", opts.inPath, isIsNot( isInPathReadable ));
+        boolean isInPathDir = Files.isDirectory( Paths.get( opts.inPath ));
+        System.out.printf( "Input path \"%s\" %s a directory.%n", opts.inPath, isIsNot( isInPathDir ));
         boolean dirReadable = isInPathReadable && isInPathDir;
 
-        if ( IS_WINDOWS && opt.inFile.startsWith( pathDelim ))
-            opt.inFile = opt.inFile.substring(1);
-        boolean fileReadable = Files.isReadable( Paths.get( opt.inFile )) &&
-                Files.isRegularFile( Paths.get( opt.inFile ));
-        System.out.printf( "Input file \"%s\" %s readable.%n", opt.inFile, isIsNot( fileReadable ));
+        if ( IS_WINDOWS && opts.inFile.startsWith( PATH_DELIM ))
+            opts.inFile = opts.inFile.substring(1);
+        boolean fileReadable = Files.isReadable( Paths.get( opts.inFile )) &&
+                Files.isRegularFile( Paths.get( opts.inFile ));
+        System.out.printf( "Input file \"%s\" %s readable.%n", opts.inFile, isIsNot( fileReadable ));
 
-        String comboPathStr = opt.inFile;
+        String comboPathStr = opts.inFile;
         if ( isInPathDir ) {
-            if ( opt.inPath.endsWith( pathDelim ) || opt.inFile.startsWith( pathDelim ))
-                comboPathStr = opt.inPath + opt.inFile;
+            if ( opts.inPath.endsWith( PATH_DELIM ) || opts.inFile.startsWith( PATH_DELIM ))
+                comboPathStr = opts.inPath + opts.inFile;
             else
-                comboPathStr = opt.inPath + pathDelim + opt.inFile;
+                comboPathStr = opts.inPath + PATH_DELIM + opts.inFile;
         }
-        if ( IS_WINDOWS && comboPathStr.startsWith( pathDelim ))
+        if ( IS_WINDOWS && comboPathStr.startsWith( PATH_DELIM ))
             comboPathStr = comboPathStr.substring(1);
         Path comboPath = Paths.get( comboPathStr );
         boolean comboReadable = Files.isReadable( comboPath ) && Files.isRegularFile( comboPath );
@@ -179,16 +178,16 @@ public class ArmyList {
         }
         else if (fileReadable) {
             // Use inputPath
-            inputFiles.add( opt.inFile );
+            inputFiles.add( opts.inFile );
         }
         else if (dirReadable) {
             // dirReadable - list files there
-            File[] files = new File(opt.inPath).listFiles();
+            File[] files = new File(opts.inPath).listFiles();
             if ( null != files ) {
                 for (File file : files) {
                     if (file.isFile() && file.canRead()) {
-                        if (file.getName().contains(opt.nameContains) &&
-                                file.getName().endsWith(opt.nameEndsWith)) {
+                        if (file.getName().contains(opts.nameContains) ||
+                                file.getName().endsWith(opts.nameEndsWith)) {
                             inputFiles.add(file.getPath());
                         }
                     }
@@ -197,7 +196,7 @@ public class ArmyList {
         }
         // otherwise - message
         LOGGER.info( format( "Input path \"%s\", file \"%s\", contains \"%s\", endsWith \"%s\" found %d items.%n",
-                opt.inPath, opt.inFile, opt.nameContains, opt.nameEndsWith, inputFiles.size()));
+                opts.inPath, opts.inFile, opts.nameContains, opts.nameEndsWith, inputFiles.size()));
 
         // Remove files to not use.
         List<String> removes = List.of( "README.txt" );
@@ -209,5 +208,18 @@ public class ArmyList {
     /** Change boolean to "is" or "is not" String. */
     public static String isIsNot( boolean is ) {
         return is ? "is" : "is not";
+    }
+
+    /**
+     * Returns a list of armies that have the given year in their headers year range.
+     * @param year to test for army inclusion
+     * @return list of Army with year range spanning the given year
+     */
+    public static List<Army> getByYear( YearType year ) {
+        return Armies.values().stream()
+                .filter( army -> army.header.years.stream()
+                   .anyMatch(yr -> yr.contains( year )))
+                .sorted()
+                .toList();
     }
 }

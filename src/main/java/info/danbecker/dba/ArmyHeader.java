@@ -42,9 +42,9 @@ public class ArmyHeader implements Comparable<ArmyHeader> {
      * Construct header from ArmyHeaderBean information.
      * Synthesize and fill in other fields.
      *
-     * @param armyRef
-     * @param groupName
-     * @param variantCount
+     * @param armyRef section and number of army
+     * @param groupName name of army
+     * @param variantCount count for validity checks
      */
     public ArmyHeader(ArmyRef armyRef, String groupName, int variantCount) {
         if (null == armyRef) throw new IllegalArgumentException("armyRef is null");
@@ -94,6 +94,14 @@ public class ArmyHeader implements Comparable<ArmyHeader> {
      */
     public String getGroupName() {
         return this.groupName;
+    }
+
+    /**
+     * Returns the year ranges for this army
+     * @return year ranges for this army
+     */
+    public List<YearRange> getYearRanges() {
+        return this.years;
     }
 
     /**
