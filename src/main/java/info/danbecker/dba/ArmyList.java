@@ -123,8 +123,8 @@ public class ArmyList {
             if ( null == army ) throw new IllegalArgumentException( "Could not find armyRef " + armyRef );
             // System.out.print( varRef );
 
-            ArmyVariant armyVariant = new ArmyVariant( varRef, b.name, b.getElements(),
-                            b.topo, b.agg, b.enemies, b.allies);
+            ArmyVariant armyVariant = new ArmyVariant( varRef, b.name, b.getElements(), b.topo, b.agg,
+               b.enemies, b.allies);
             army.getVariants().add( armyVariant );
             // System.out.format( " %s, E=%s A=%s%n", armyVariant.variantName, armyVariant.enemies.toString(), armyVariant.allies.toString());
         });
@@ -219,6 +219,21 @@ public class ArmyList {
         return Armies.values().stream()
                 .filter( army -> army.header.years.stream()
                    .anyMatch(yr -> yr.contains( year )))
+                .sorted()
+                .toList();
+    }
+
+    /**
+     * Returns a list of armies that have the given terrain in all the variants.
+     * @param terrain  to test for army inclusion
+     * @return list of ArmyVariants with the given terrain
+     */
+    public static List<ArmyVariant> getByTerrain( String terrain ) {
+        if ( null == terrain || terrain.isEmpty() ) return List.of();
+        final String terrainCase = ArmyHeader.toDisplayCase( terrain );
+        return Armies.values().stream()
+                .flatMap( army->army.getVariants().stream() )
+                .filter( av->terrainCase.equals( av.terrain ))
                 .sorted()
                 .toList();
     }

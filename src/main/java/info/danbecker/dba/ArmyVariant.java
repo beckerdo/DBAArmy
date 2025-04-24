@@ -64,6 +64,7 @@ public class ArmyVariant implements Comparable<ArmyVariant> {
             throw new IllegalArgumentException( e.getMessage() + ", armyRef=" + armyRef);
         }
         if (null == terrain || terrain.isEmpty()) throw new IllegalArgumentException("empty terrain for " + armyRef );
+        // Should make this a TerrainType
         this.terrain = terrain;
         if (0 > aggression || 6 < aggression) throw new IllegalArgumentException("illegal aggression of " + aggression);
         this.aggression = aggression;

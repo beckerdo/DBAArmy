@@ -5,8 +5,10 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static info.danbecker.dba.ArmyList.*;
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ArmyListTest {
@@ -45,5 +47,74 @@ public class ArmyListTest {
         assertEquals( 57, armies.size() );
         assertEquals( ArmyRef.parse( "II/42" ), armies.getFirst().getArmyRef() );
         assertEquals( ArmyRef.parse( "III/80" ), armies.getLast().getArmyRef() );
+    }
+
+    @Test
+    public void testArmyListByTerrain() throws IOException {
+        // Test function without loading.
+        List<ArmyVariant> variants = ArmyList.getByTerrain( "arable" );
+        assertEquals( 0, variants.size() );
+
+        // Load something
+        ArmyList.main( LOAD_ARGS );
+
+        int count = 0;
+        variants = ArmyList.getByTerrain( "arable" );
+        // variants.forEach( av-> System.out.format( "%s, %s, %s%n",
+        //   av.armyRef, av.variantName, av.terrain ));
+        count += variants.size();
+        assertEquals( 262, variants.size() );
+        assertEquals( ArmyRef.parse( "I/1a" ), variants.getFirst().getArmyRef() );
+        assertEquals( ArmyRef.parse( "IV/85b" ), variants.getLast().getArmyRef() );
+
+        variants = ArmyList.getByTerrain( "forest" );
+        // variants.forEach( av-> System.out.format( "%s, %s, %s%n",
+        //   av.armyRef, av.variantName, av.terrain ));
+        count += variants.size();
+        assertEquals( 22, variants.size() );
+        assertEquals( ArmyRef.parse( "II/47a" ), variants.getFirst().getArmyRef() );
+        assertEquals( ArmyRef.parse( "IV/66" ), variants.getLast().getArmyRef() );
+
+        variants = ArmyList.getByTerrain( "hilly" );
+        // variants.forEach( av-> System.out.format( "%s, %s, %s%n",
+        //    av.armyRef, av.variantName, av.terrain ));
+        count += variants.size();
+        assertEquals( 96, variants.size() );
+        assertEquals( ArmyRef.parse( "I/4a" ), variants.getFirst().getArmyRef() );
+        assertEquals( ArmyRef.parse( "IV/84b" ), variants.getLast().getArmyRef() );
+
+        variants = ArmyList.getByTerrain( "steppe" );
+        // variants.forEach( av-> System.out.format( "%s, %s, %s%n",
+        //    av.armyRef, av.variantName, av.terrain ));
+        count += variants.size();
+        assertEquals( 54, variants.size() );
+        assertEquals( ArmyRef.parse( "I/3" ), variants.getFirst().getArmyRef() );
+        assertEquals( ArmyRef.parse( "IV/77" ), variants.getLast().getArmyRef() );
+
+        variants = ArmyList.getByTerrain( "dry" );
+        // variants.forEach( av-> System.out.format( "%s, %s, %s%n",
+        //    av.armyRef, av.variantName, av.terrain ));
+        count += variants.size();
+        assertEquals( 41, variants.size() );
+        assertEquals( ArmyRef.parse( "I/6a" ), variants.getFirst().getArmyRef() );
+        assertEquals( ArmyRef.parse( "IV/71b" ), variants.getLast().getArmyRef() );
+
+        variants = ArmyList.getByTerrain( "tropical" );
+        // variants.forEach( av-> System.out.format( "%s, %s, %s%n",
+        //    av.armyRef, av.variantName, av.terrain ));
+        count += variants.size();
+        assertEquals( 33, variants.size() );
+        assertEquals( ArmyRef.parse( "I/23a" ), variants.getFirst().getArmyRef() );
+        assertEquals( ArmyRef.parse( "IV/72" ), variants.getLast().getArmyRef() );
+
+        variants = ArmyList.getByTerrain( "littoral" );
+        // variants.forEach( av-> System.out.format( "%s, %s, %s%n",
+        //    av.armyRef, av.variantName, av.terrain ));
+        count += variants.size();
+        assertEquals( 90, variants.size() );
+        assertEquals( ArmyRef.parse( "I/2a" ), variants.getFirst().getArmyRef() );
+        assertEquals( ArmyRef.parse( "IV/61" ), variants.getLast().getArmyRef() );
+
+        System.out.println( "ArmyList.getByTerrain found " + count + " variants.");
     }
 }
