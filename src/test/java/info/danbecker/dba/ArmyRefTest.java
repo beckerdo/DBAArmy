@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -177,4 +179,24 @@ public class ArmyRefTest {
                 .collect(Collectors.toList());
         assertEquals( Arrays.asList( "I/1", "I/10", "I/10a", "I/10b", "II/21", "III/17", "IV/1a", "IV/1b"  ), sorted);
    }
+
+    @Test
+    public void testVersionMax() throws IOException {
+        // Tests that hard coded version counts are the same as the config files.
+        // Load something
+        ArmyList.main( ArmyListTest.LOAD_ARGS );
+
+        for ( int section = ArmyRef.MIN_SECTION; section <= ArmyRef.MAX_SECTION; section++) {
+            for ( int number = ArmyRef.MIN_NUMBER; number <= ArmyRef.maxNumber( section ); number++) {
+                int hardVarCount = ArmyRef.maxVersion( section, number );
+                ArmyRef armyRef = new ArmyRef(section,number,0);
+                Army army = ArmyList.Armies.get( armyRef );
+                assertNotNull( army, String.format( "ArmyRef %s not in ArmyList", armyRef ) );
+                int configVarCount = army.header.variantCount;
+                // System.out.format( "%s ref max=%d, csv max=%d%n", armyRef, hardVarCount, configVarCount );
+                assertEquals( configVarCount, hardVarCount,
+                   String.format( "%s ref max=%d, csv max=%d%n", armyRef, hardVarCount, configVarCount ));
+            } // number
+        } // section
+    }
 }
