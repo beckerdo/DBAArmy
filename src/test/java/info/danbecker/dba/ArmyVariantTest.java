@@ -21,7 +21,7 @@ public class ArmyVariantTest {
         // Allies: 11/10 or 11/32a.
         ArmyVariant test = new ArmyVariant(
                 ArmyRef.parse("II/8a"),
-                "II/8a Bruttian or Lucanian Armies 420-203 BC",
+                "Bruttian or Lucanian Armies 420-203 BC",
                 // new TroopDef("1 x General (Cv), 9 x warriors (3Ax or 4Ax), 2 x peasants (7Hd) or javelinmen (Ps)"),
                 "Cv(Gen),9x3Ax|4Ax,2x7Hd|Ps",
                 "Hilly", 1,
@@ -29,12 +29,14 @@ public class ArmyVariantTest {
                 "II/10, II/32a");
 
         assertEquals("II/8a", test.armyRef.toString());
-        assertEquals("II/8a Bruttian or Lucanian Armies 420-203 BC", test.variantName );
+        assertEquals("Bruttian or Lucanian Armies 420-203 BC", test.variantName );
         assertEquals("420BC-203BC", test.years.toString() );
         //assertEquals("420-203BC", test.years );
         assertEquals("Hilly", test.terrain );
         assertEquals(1, test.aggression );
         assertIterableEquals(List.of( ArmyRef.parse("I/36a"), ArmyRef.parse("I/36d")), test.enemies );
         assertIterableEquals(List.of( ArmyRef.parse("II/10"), ArmyRef.parse("II/32a")), test.allies );
+
+        System.out.println( test.troopDef.toString() );
     }
 }

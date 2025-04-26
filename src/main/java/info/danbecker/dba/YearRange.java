@@ -67,6 +67,7 @@ public record YearRange(YearType begin, YearType end) implements Comparable<Year
         Matcher matcher = yearPattern.matcher( str );
         // boolean b = matcher.find(); // must find or namedGroups to get groups
         int matchCount = 0;
+        int patternMatchCount = matcher.groupCount();
 
         List<String> years = new ArrayList<>();
         List<String> modifiers = new ArrayList<>();
@@ -103,6 +104,7 @@ public record YearRange(YearType begin, YearType end) implements Comparable<Year
             // Options for 2 or more dates:
             //    -parse first two
             //    -parse first and last (implemented)
+            //    -min of evens, max of odds
             //    -throw IllegalStateException
             //    -parse list of dates, two at a time.
             default -> {

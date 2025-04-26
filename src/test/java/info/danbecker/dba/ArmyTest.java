@@ -20,16 +20,15 @@ public class ArmyTest {
         // E:II/64a,68a,68b,72b,72d,73,78a,81a,81b,81c,81d,83a,III/1a,2,3,5a,13b,19a,21a,21b,28,
         // A:III/1a,1b,13a,13b (Bavarians only)
         ArmyVariant variant = new ArmyVariant(
-                ArmyRef.parse("II/73"), "Old Saxon Army 250-804 AD, Frisian Army 250-690 AD, Bavarian Army 250-788 AD, Thuringian Army 250-531 AD & 555 AD and Early Anglo-Saxon Army 428-617",
+                ArmyRef.parse("II/73"), "Old Saxon Army 250-804 AD, Frisian Army 250-690 AD, Bavarian Army 250-788 AD, Thuringian Army 250-531 AD & 555 AD and Early Anglo-Saxon Army 428-617 AD",
                 // new TroopDef("1 x General (Cv), 9 x warriors (3Ax or 4Ax), 2 x peasants (7Hd) or javelinmen (Ps)"),
-                "4Wb(Gen),10x4Wb,1xPs",
+                "4Wb+Gen,10x4Wb,1xPs",
                 "Littoral", 2,
                 "II/64a,68a,68b,72b,72d",
                 "III/1a,1b,13a,13b");
 
         Army army = new Army( header, List.of( variant) );
         assertEquals( "II/73", army.getArmyRef().toString() );
-
         assertEquals( 1, army.getVariants().size() );
     }
 }

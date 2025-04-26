@@ -48,7 +48,7 @@ public class TroopDef implements Comparable<TroopDef> {
     static {
         LOGGER.setLevel(Level.FINEST);
         LOGGER.fine( "Army parser initialization");
-        CharStream charStream = CharStreams.fromString("Ps");
+        CharStream charStream = CharStreams.fromString("" );
         DBAArmyLexer lexer = new DBAArmyLexer(charStream);
         CommonTokenStream tokenStream = new CommonTokenStream(lexer);
         DBAArmyParser parser = new DBAArmyParser(tokenStream);

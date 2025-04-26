@@ -68,16 +68,16 @@ public class ArmyVariantBean {
     public static final String SCAT = ",";
 
     public String getElements() {
-       // StringBuilder elements = new StringBuilder( ele0.replace("/",BAR) + "(Gen)" );
-       StringBuilder elements = new StringBuilder( ele0 + "(Gen)" );
-       if( null != ele1 && ele1.length() > 0) elements.append( SCAT ).append( ele1.replace(OR,BAR));
-       if( null != ele2 && ele2.length() > 0) elements.append( SCAT ).append( ele2.replace(OR,BAR));
-       if( null != ele3 && ele3.length() > 0) elements.append( SCAT ).append( ele3.replace(OR,BAR));
-       if( null != ele4 && ele4.length() > 0) elements.append( SCAT ).append( ele4.replace(OR,BAR));
-       if( null != ele5 && ele5.length() > 0) elements.append( SCAT ).append( ele5.replace(OR,BAR));
-       if( null != ele6 && ele6.length() > 0) elements.append( SCAT ).append( ele6.replace(OR,BAR));
-       if( null != ele7 && ele7.length() > 0) elements.append( SCAT ).append( ele7.replace(OR,BAR));
-       if( null != ele8 && ele8.length() > 0) elements.append( SCAT ).append( ele8.replace(OR,BAR));
+        // Add General to first
+        StringBuilder elements = new StringBuilder( ele0 + "+Gen" );
+        if( null != ele1 && !ele1.isEmpty()) elements.append( SCAT ).append( ele1 );
+        if( null != ele2 && !ele2.isEmpty()) elements.append( SCAT ).append( ele2 );
+        if( null != ele3 && !ele3.isEmpty()) elements.append( SCAT ).append( ele3 );
+        if( null != ele4 && !ele4.isEmpty()) elements.append( SCAT ).append( ele4 );
+        if( null != ele5 && !ele5.isEmpty()) elements.append( SCAT ).append( ele5 );
+        if( null != ele6 && !ele6.isEmpty()) elements.append( SCAT ).append( ele6 );
+        if( null != ele7 && !ele7.isEmpty()) elements.append( SCAT ).append( ele7 );
+        if( null != ele8 && !ele8.isEmpty()) elements.append( SCAT ).append( ele8 );
        return elements.toString();
     }
 

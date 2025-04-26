@@ -79,9 +79,10 @@ public class TroopDefTest {
 
         // All terminals
         String[] terminals = {"CP", "Lit", "CWg", "Gen", "El", "3Kn", "4Kn", "6Kn", "Kn", "HCh",
-                "Cv", "6Cv", "LCh", "LH", "LCm", "SCh", "Cm", "Mtd-X", "8Sp", "Sp", "4Pk", "3Pk", "Pk",
-                "4Bd", "3Bd", "6Bd", "Bd", "4Ax", "3Ax", "Ax", "4Bw", "3Bw", "8Bw", "Bw", "4Cb", "3Cb", "8Cb", "Cb",
-                "4Lb", "3Lb", "8Lb", "Lb", "Ps", "4Wb", "3Wb", "Wb", "7Hd", "5Hd", "Hd", "Art", "WWg"};
+                "Cv", "6Cv", "LCh", "LH", "LCm", "SCh", "Cm", "Mtd-3Bw", "Mtd-4Bw", "Mtd-3Cb", "Mtd-4Cb", "Mtd-3Lb", "Mtd-4Lb",
+                "8Sp", "Sp", "4Pk", "3Pk", "Pk", "4Bd", "3Bd", "6Bd", "Bd", "4Ax", "3Ax", "Ax",
+                "4Bw", "3Bw", "8Bw", "Bw", "4Cb", "3Cb", "8Cb", "Cb", "4Lb", "3Lb", "8Lb", "Lb",
+                "Ps", "4Wb", "3Wb", "Wb", "7Hd", "5Hd", "Hd", "Art", "WWg"};
         for (String terminal : terminals) {
             assertEquals(terminal.replaceAll("\\s", ""), new TroopDef(terminal).toString());
         }
@@ -91,6 +92,7 @@ public class TroopDefTest {
     public void testCompoundParse() {
         // More extensive tests of real word lists with generals, numbers, and options
         String[] armies = {
+                "3Bd + Gen,8x4Bw,3xPs", // I/1a
                 "3Bd or 3/4Bw,6x3Ax or 3Wb,3xPs,1xPs,1xPs", // I/4a
                 "3Pk or Sp,3xPk or Sp,2x4Bw,2x4Bw or 3Ax,4xPs", // I/10
                 "Cv,Cv,7xSp/4Ax,3xPs", // I/30c
@@ -113,7 +115,7 @@ public class TroopDefTest {
                 "Lit or 4Bw,1x4Bd,5x3Bw,2xPs,3x5Hd", // IV/10
                 "3Kn or 6Kn,1x3Kn or 6Kn,1xCv,3x3Kn,1x3Kn or 3Wb,1xLH,1xSp,2x4Cb,1x3Ax or 7Hd", // IV/30
                 "1x4Bd or 4Ax or LH,1x3Kn,3xCv,2xLH or Ps or 7Hd,1xSp or 4Ax,3xPs or 3/4Bw", // IV/50
-                "Gen+LCh or Gen+Cv", //4Wb
+                "Gen+LCh or Gen+Cv",
         };
 
         for (String army : armies) {

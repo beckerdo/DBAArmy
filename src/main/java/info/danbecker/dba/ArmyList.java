@@ -229,11 +229,25 @@ public class ArmyList {
      * @return list of ArmyVariants with the given terrain
      */
     public static List<ArmyVariant> getByTerrain( String terrain ) {
-        if ( null == terrain || terrain.isEmpty() ) return List.of();
+        if ( null == terrain || terrain.isEmpty() ) throw new IllegalArgumentException( "Terrain \"" + terrain + " is an invalid terrain type" );
         final String terrainCase = ArmyHeader.toDisplayCase( terrain );
         return Armies.values().stream()
                 .flatMap( army->army.getVariants().stream() )
                 .filter( av->terrainCase.equals( av.terrain ))
+                .sorted()
+                .toList();
+    }
+
+    /**
+     * Returns a list of armies that have the given aggression level.
+     * @param aggr an aggression level (0..6 inclusive)
+     * @return list of ArmyVariants with the given aggression
+     */
+    public static List<ArmyVariant> getByAggression( int aggr ) {
+        if ( 0 > aggr || 6 < aggr ) throw new IllegalArgumentException( "Aggression " + aggr + " should be in the range (0..6)" );
+        return Armies.values().stream()
+                .flatMap( army->army.getVariants().stream() )
+                .filter( av-> aggr == av.aggression )
                 .sorted()
                 .toList();
     }
