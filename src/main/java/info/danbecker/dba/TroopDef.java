@@ -470,8 +470,7 @@ public class TroopDef implements Comparable<TroopDef> {
      * @return same tree or promoter either unitzs
      */
     public static Tree promoteExprEitherUnit(Tree t ) {
-        if ( t instanceof DBAArmyParser.ExprEitherUnitContext ) {
-            DBAArmyParser.ExprEitherUnitContext eitherUnit = (DBAArmyParser.ExprEitherUnitContext) t;
+        if (t instanceof DBAArmyParser.ExprEitherUnitContext eitherUnit) {
             int num = Integer.parseInt(eitherUnit.INTEGER().getText());
             String secondTypeStr = eitherUnit.type().getText();
             List<String> numChars = getNumCharGroups( secondTypeStr );
@@ -501,8 +500,7 @@ public class TroopDef implements Comparable<TroopDef> {
      * @return promoted tree or original
      */
     public static Tree promoteExprMultiple1x(Tree t ) {
-        if ( t instanceof DBAArmyParser.ExprMultipleContext ) {
-            DBAArmyParser.ExprMultipleContext mult = (DBAArmyParser.ExprMultipleContext) t;
+        if (t instanceof DBAArmyParser.ExprMultipleContext mult) {
             int multi = Integer.parseInt(mult.INTEGER().getText());
             if (1 == multi) {
                 System.out.println("Promoting 1x exprMultiple \""+ mult.getText() + "\" to \"" + mult.expr().getText() + "\"");
@@ -568,11 +566,10 @@ public class TroopDef implements Comparable<TroopDef> {
         switch (t) {
             case DBAArmyParser.ExprsContext exprs -> {
                 // System.out.println("Matching " + getNodeText(exprs, true) + " to " + getNodeText(that, true));
-                if (!(that instanceof DBAArmyParser.ExprsContext)) {
+                if (!(that instanceof DBAArmyParser.ExprsContext thatExprs)) {
                     System.out.println("Mismatched rules " + getNodeText(exprs, true) + " to " + getNodeText(that, true));
                     return false;
                 }
-                DBAArmyParser.ExprsContext thatExprs = (DBAArmyParser.ExprsContext) that;
                 if (exprs.getChildCount() != thatExprs.getChildCount()) {
                     System.out.println("Mismatched exprs counts " + exprs.getChildCount() + " to " + thatExprs.getChildCount());
                     return false;
@@ -584,8 +581,7 @@ public class TroopDef implements Comparable<TroopDef> {
             }
             case DBAArmyParser.ExprEitherContext either -> {
                 System.out.println("Matching exprEither " +  toStringTree( either )+ " to " + toStringTree( that ) );
-                if ( that instanceof DBAArmyParser.ExprEitherContext ) {
-                    DBAArmyParser.ExprEitherContext thatExprEither = (DBAArmyParser.ExprEitherContext) that;
+                if (that instanceof DBAArmyParser.ExprEitherContext thatExprEither) {
                     // Allow either expressions to match in any order.
                     return ((matchTree( either.expr(0), thatExprEither.expr(0)) &&
                              matchTree( either.expr(1), thatExprEither.expr(1))) ||
@@ -597,8 +593,7 @@ public class TroopDef implements Comparable<TroopDef> {
             case DBAArmyParser.ExprDismountContext dismount -> {
                 // Unlike either where Cv/Bd == Bd/Cv, dismount Cv//Bd != Bd//Cv, similarly Cv//Bd != Cv
                 System.out.println("Matching exprDismount " +  toStringTree( dismount )+ " to " + toStringTree( that ) );
-                if ( that instanceof DBAArmyParser.ExprDismountContext ) {
-                    DBAArmyParser.ExprDismountContext thatExprDismount = (DBAArmyParser.ExprDismountContext) that;
+                if (that instanceof DBAArmyParser.ExprDismountContext thatExprDismount) {
                     // Dismount expressions must match order.
                     return matchTree( dismount.expr(0), thatExprDismount.expr(0)) &&
                          matchTree( dismount.expr(1), thatExprDismount.expr(1));
@@ -609,10 +604,9 @@ public class TroopDef implements Comparable<TroopDef> {
                 System.out.println("Matching exprAnd " +  toStringTree( exprAnd )+ " to " + toStringTree( that ) );
                 DBAArmyParser.ExprContext thisA = exprAnd.expr(0);
                 DBAArmyParser.ExprContext thisB = exprAnd.expr(1);
-                if ( that instanceof DBAArmyParser.ExprAndContext ) {
+                if (that instanceof DBAArmyParser.ExprAndContext thatExprAnd) {
                     // Matching exprAnd Ax+Bd to Bd+Ax
                     // Also matching exprAnd Ax+Bd+Cv to Ax+Cv+Bd
-                    DBAArmyParser.ExprAndContext thatExprAnd = (DBAArmyParser.ExprAndContext) that;
                     DBAArmyParser.ExprContext thatA = thatExprAnd.expr(0);
                     DBAArmyParser.ExprContext thatB = thatExprAnd.expr(1);
                     if ((matchTree( thisA, thatA ) && matchTree( thisB, thatB )) ||
@@ -625,10 +619,9 @@ public class TroopDef implements Comparable<TroopDef> {
                         return matchTreesAnyOrder( getAllExprs( exprAnd ), getAllExprs(thatExprAnd), true );
                     }
                 }
-                else if  ( that instanceof DBAArmyParser.ExprOrContext ) {
+                else if  (that instanceof DBAArmyParser.ExprOrContext thatExprOr) {
                     // Matching thisA+thisB to thatC or thatA+thatC?
                     // Also matching thisA+thisB to thatA+thatB or thatC?
-                    DBAArmyParser.ExprOrContext thatExprOr = (DBAArmyParser.ExprOrContext) that;
                     DBAArmyParser.ExprContext thatA = thatExprOr.expr(0);
                     DBAArmyParser.ExprContext thatB = thatExprOr.expr(1);
                     return matchTree( exprAnd, thatA ) || matchTree( exprAnd, thatB );
@@ -640,19 +633,17 @@ public class TroopDef implements Comparable<TroopDef> {
                 System.out.println("Matching exprOr " + toStringTree(exprOr) + " to " + toStringTree(that));
                 DBAArmyParser.ExprContext thisA = exprOr.expr(0);
                 DBAArmyParser.ExprContext thisB = exprOr.expr(1);
-                if (that instanceof DBAArmyParser.ExprOrContext) {
+                if (that instanceof DBAArmyParser.ExprOrContext thatExprOr) {
                     // Matching exprOr Ax or Bd to Bd or Ax
                     // Also matching exprOr Ax or Bd or Cv to Ax or Cv or Bd
-                    DBAArmyParser.ExprOrContext thatExprOr = (DBAArmyParser.ExprOrContext) that;
                     DBAArmyParser.ExprContext thatA = thatExprOr.expr(0);
                     DBAArmyParser.ExprContext thatB = thatExprOr.expr(1);
                     return matchTree( thisA, thatA ) || matchTree( thisA, thatB ) ||
                             matchTree( thisB, thatA ) || matchTree( thisB, thatB );
                 }
-                else if (that instanceof DBAArmyParser.ExprEitherContext ) {
+                else if (that instanceof DBAArmyParser.ExprEitherContext thatExprOr) {
                     // Matching exprOr Ax or Bd to Bd or Ax
                     // Also matching exprOr Ax or Bd or Cv to Ax or Cv or Bd
-                    DBAArmyParser.ExprEitherContext thatExprOr = (DBAArmyParser.ExprEitherContext) that;
                     DBAArmyParser.ExprContext thatA = thatExprOr.expr(0);
                     DBAArmyParser.ExprContext thatB = thatExprOr.expr(1);
                     return matchTree( thisA, thatA ) || matchTree( thisA, thatB ) ||
@@ -663,8 +654,7 @@ public class TroopDef implements Comparable<TroopDef> {
             case DBAArmyParser.ExprMultipleContext mult -> {
                 // 1x exprMultiples are promoted to expr above.
                 System.out.println("Matching exprMulti " + toStringTree( mult ) + " to " + toStringTree(that));
-                if ( that instanceof DBAArmyParser.ExprMultipleContext ) {
-                    DBAArmyParser.ExprMultipleContext thatMult = (DBAArmyParser.ExprMultipleContext) that;
+                if (that instanceof DBAArmyParser.ExprMultipleContext thatMult) {
                     int multi = Integer.parseInt(mult.INTEGER().getText());
                     int thatMulti = Integer.parseInt(thatMult.INTEGER().getText());
                     if (multi != thatMulti) {
@@ -686,8 +676,7 @@ public class TroopDef implements Comparable<TroopDef> {
             //}
             case DBAArmyParser.ExprTypeContext exprType -> {
                 // System.out.println("Matching exprType " +  toStringTree(exprType)+ " to " + toStringTree(that));
-                if ( that instanceof DBAArmyParser.ExprTypeContext ) {
-                    DBAArmyParser.ExprTypeContext thatType = (DBAArmyParser.ExprTypeContext) that;
+                if (that instanceof DBAArmyParser.ExprTypeContext thatType) {
                     // System.out.println("Matching exprType " + exprType.getText() + " to " + thatType.getText() );
                     return exprType.getText().equals( thatType.getText() );
                 } else if ( that instanceof DBAArmyParser.ExprOrContext ) {

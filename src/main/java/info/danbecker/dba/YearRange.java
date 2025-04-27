@@ -107,9 +107,7 @@ public record YearRange(YearType begin, YearType end) implements Comparable<Year
             //    -min of evens, max of odds
             //    -throw IllegalStateException
             //    -parse list of dates, two at a time.
-            default -> {
-                yield fillMissingEra( years.getFirst(), years.getLast() );
-            }
+            default -> fillMissingEra( years.getFirst(), years.getLast() );
         };
     }
 

@@ -89,8 +89,8 @@ public enum ElementType {
      * I do not know how performant switch is compared
      * to grep and pattern matching.
      *
-     * @param code
-     * @return
+     * @param code a unit type  for example Cv or Sp
+     * @return the group  the type belongs to CAVALRY, SPEARS, etc.
      */
     public static ElementType getType(String code) {
         return switch (code) {
