@@ -34,8 +34,6 @@ public class GeographicIndexTest {
         List<GeographicIndex> regions = GeographicIndex.WORLD.getRegions();
         regions
             .forEach(g -> assertEquals( GeographicIndex.WORLD, g.getParent()) );
-
-
     }
 
     @Test
@@ -51,7 +49,7 @@ public class GeographicIndexTest {
 
         // Army aggregation
         GeographicIndex africa = GeographicIndex.find( "Africa" ).get();
-        List<ArmyRef> armies = africa.getAllArmies();
+        List<ArmyRef> armies = africa.getAllArmyRefs();
         // System.out.println( "Armies=" + ArmyRef.toStringCompact(armies));
         assertEquals(28, armies.size());
         assertEquals("I/2", armies.getFirst().toString());
@@ -65,7 +63,7 @@ public class GeographicIndexTest {
         assertEquals("IV/45", armies.getLast().toString());
 
         GeographicIndex world = GeographicIndex.find( "World" ).get();
-        armies = world.getAllArmies();
+        armies = world.getAllArmyRefs();
         armies.sort( Comparator.naturalOrder() );
         System.out.println( "Armies All=" + ArmyRef.toStringCompact(armies));
         assertEquals(340, armies.size());
@@ -77,5 +75,4 @@ public class GeographicIndexTest {
         assertEquals("IV/84", armies.get(339).toString());
         assertEquals("IV/84", armies.getLast().toString());
     }
-
 }

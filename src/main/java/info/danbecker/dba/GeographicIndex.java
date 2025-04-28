@@ -75,16 +75,16 @@ public class GeographicIndex implements Comparable<GeographicIndex> {
     private final List<GeographicIndex> regions;
     private final List<ArmyRef> armyRefs;
 
-    public GeographicIndex(String name, List<GeographicIndex> regions, List<ArmyRef> armies) {
+    private GeographicIndex(String name, List<GeographicIndex> regions, List<ArmyRef> armies) {
         this.name = name;
         this.regions = regions; // children, may be null
         this.armyRefs = armies; // armies, may be null
         regions.forEach( g -> g.parent = this);
     }
-    public GeographicIndex(String name, List<GeographicIndex> regions ) {
+    private GeographicIndex(String name, List<GeographicIndex> regions ) {
         this( name, regions, List.of() );
     }
-    public GeographicIndex(String name, String armies ) {
+    private GeographicIndex(String name, String armies ) {
         this( name, List.of(), ArmyRef.parseList( armies ));
     }
 
@@ -119,16 +119,16 @@ public class GeographicIndex implements Comparable<GeographicIndex> {
     }
 
     /** Get the armies of this region.* */
-    public List<ArmyRef> getArmies() {
+    public List<ArmyRef> getArmyRefs() {
         return armyRefs;
     }
 
     /** Get all the armies of this region and below
       * Use Geographic.WORLD.getAllArmies to get all armies in the entire tree.
       */
-    public List<ArmyRef> getAllArmies() {
+    public List<ArmyRef> getAllArmyRefs() {
         return stream()
-                .flatMap(g -> g.getArmies().stream())
+                .flatMap(g -> g.getArmyRefs().stream())
                 .collect( Collectors.toList());
     }
 
