@@ -3,8 +3,11 @@ package info.danbecker.dba;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static info.danbecker.dba.TerrainType.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TerrainTypeTest {
     @BeforeEach
@@ -13,9 +16,6 @@ public class TerrainTypeTest {
 
     @Test
     public void testBasic() {
-//        for ( TerrainType terrain : TerrainType.values() ) {
-//            System.out.println( terrain.initCap());
-//        }
         assertEquals( "Arable", ARABLE.initCap());
         assertEquals( "Forest", FOREST.initCap());
         assertEquals( "Hilly", HILLY.initCap());
@@ -31,5 +31,25 @@ public class TerrainTypeTest {
         assertEquals( "Dr", DRY.abbr());
         assertEquals( "Tr", TROPICAL.abbr());
         assertEquals( "Li", LITTORAL.abbr());
+    }
+
+    @Test
+    public void testParsing() {
+        assertEquals( ARABLE, TerrainType.valueOf( "ARABLE"));
+        assertEquals( FOREST, TerrainType.fromString("forest"));
+
+        assertIterableEquals( List.of( HILLY ), TerrainType.listFromString( "Hilly"));
+        assertIterableEquals( List.of( STEPPE, DRY ), TerrainType.listFromString("Steppe/Dry" ));
+
+        IllegalArgumentException ie = assertThrows(
+                IllegalArgumentException.class,
+                () -> TerrainType.listFromString("" )
+        );
+        assertTrue(ie.getMessage().contains("No enum constant "));
+        ie = assertThrows(
+                IllegalArgumentException.class,
+                () -> TerrainType.listFromString( "Fred/Farkle" )
+        );
+        assertTrue(ie.getMessage().contains("No enum constant "));
     }
 }

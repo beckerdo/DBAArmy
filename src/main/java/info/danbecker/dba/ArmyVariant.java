@@ -35,7 +35,7 @@ public class ArmyVariant implements Comparable<ArmyVariant> {
     final String variantName;
     final YearRange years;
     final TroopDef troopDef;
-    final String terrain;
+    final List<TerrainType> terrain;
     final int aggression;
     final List<ArmyRef> enemies;
     final List<ArmyRef> allies;
@@ -64,8 +64,8 @@ public class ArmyVariant implements Comparable<ArmyVariant> {
             throw new IllegalArgumentException( e.getMessage() + ", armyRef=" + armyRef);
         }
         if (null == terrain || terrain.isEmpty()) throw new IllegalArgumentException("empty terrain for " + armyRef );
-        // Should make this a TerrainType
-        this.terrain = terrain;
+        // Warning, armies may have multiple terrains such as "Arable/Littoral/Forest"
+        this.terrain = TerrainType.listFromString( terrain );
         if (0 > aggression || 6 < aggression) throw new IllegalArgumentException("illegal aggression of " + aggression);
         this.aggression = aggression;
         this.enemies = ArmyRef.parseList( enemies ); // can handle nulls or empties
@@ -126,7 +126,7 @@ public class ArmyVariant implements Comparable<ArmyVariant> {
      * Returns the terrain
      * @return the terrain definition of this army
      */
-    public String getTerrain() {
+    public List<TerrainType> getTerrain() {
         return this.terrain;
     }
 

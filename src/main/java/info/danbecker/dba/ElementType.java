@@ -51,7 +51,7 @@ public enum ElementType {
 
     ElementType(List<String> codes) {
         this.codes = codes;
-        // codes later added to allCodes in static block
+        // codes added to allCodes in static block
     }
 
     public List<String> getCodes() {
@@ -85,14 +85,28 @@ public enum ElementType {
     }
 
     /**
+     * Return an ElementType from the case-insensitive String.
+     * @param text case-insensitive ElementType name String
+     * @return ElementType or null (not found)
+     */
+    public static ElementType fromString(String text) {
+        for (ElementType value : ElementType.values()) {
+            if (value.name().equalsIgnoreCase(text)) {
+                return value;
+            }
+        }
+        // throw new IllegalArgumentException("No Element Type with text \"" + text + "\"");
+        return null;
+    }
+
+    /**
      * Convert String to one of the ElementTypes.
-     * I do not know how performant switch is compared
-     * to grep and pattern matching.
+     * Uses switch matching rather than  regEx pattern matching.
      *
      * @param code a unit type  for example Cv or Sp
      * @return the group  the type belongs to CAVALRY, SPEARS, etc.
      */
-    public static ElementType getType(String code) {
+    public static ElementType fromCode(String code) {
         return switch (code) {
             case "El" -> ELEPHANTS;
             case "3Kn", "4Kn", "6Kn", "Kn", "HCh" -> KNIGHTS;

@@ -18,11 +18,11 @@ public class ElementTypeTest {
         assertEquals( "LIGHT_HORSE", ElementType.LIGHT_HORSE.toString());
         assertEquals( "Light Horse", ElementType.LIGHT_HORSE.properCase());
 
-        assertNull( ElementType.getType( "crud" ));
-        assertEquals( ElementType.KNIGHTS, ElementType.getType( "6Kn" ));
-        assertEquals( ElementType.BOWS, ElementType.getType( "4Bw" ));
-        assertEquals( ElementType.BOWS, ElementType.getType( "3Cb" ));
-        assertEquals( ElementType.BOWS, ElementType.getType( "8Lb" ));
+        assertNull( ElementType.fromCode( "crud" ));
+        assertEquals( ElementType.KNIGHTS, ElementType.fromCode( "6Kn" ));
+        assertEquals( ElementType.BOWS, ElementType.fromCode( "4Bw" ));
+        assertEquals( ElementType.BOWS, ElementType.fromCode( "3Cb" ));
+        assertEquals( ElementType.BOWS, ElementType.fromCode( "8Lb" ));
 
         assertFalse( ElementType.isDouble( "crud" ));
         assertTrue( ElementType.isDouble( "6Kn" ));

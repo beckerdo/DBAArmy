@@ -233,7 +233,7 @@ public class ArmyList {
         final String terrainCase = ArmyHeader.toDisplayCase( terrain );
         return Armies.values().stream()
                 .flatMap( army->army.getVariants().stream() )
-                .filter( av->terrainCase.equals( av.terrain ))
+                .filter( av->av.terrain.contains( TerrainType.fromString( terrain )))
                 .sorted()
                 .toList();
     }
@@ -248,6 +248,30 @@ public class ArmyList {
         return Armies.values().stream()
                 .flatMap( army->army.getVariants().stream() )
                 .filter( av-> aggr == av.aggression )
+                .sorted()
+                .toList();
+    }
+
+    /**
+     * Returns a list of armies that have the given element type
+     * @param elementOrCode either an element type name ("BLADES" "BOWS") or an element code ("3Bd" or "4Lb")
+     * @return list of ArmyVariants with the given aggression
+     */
+    public static List<ArmyVariant> getByElementType( String elementOrCode ) {
+        ElementType elementType = ElementType.fromString( elementOrCode ); // null if not an ElementType name
+        ElementType codeParent = ElementType.fromCode( elementOrCode ); // null if not a, ElementType code
+        if ( null == elementType && null == codeParent ) throw new IllegalArgumentException( "Could not find ElementType or element code from String \"" + elementOrCode + "\"" );
+        return Armies.values().stream()
+                .flatMap( army->army.getVariants().stream() )
+                .filter( av -> {
+                    List<String> unitList = av.troopDef.getUnitList();
+                    if ( null == elementType ) {
+                        return unitList.contains(elementOrCode);
+                    } else {
+                        return unitList.stream()
+                            .anyMatch( thisCode -> elementType.equals( ElementType.fromCode(thisCode)));
+                    }
+                })
                 .sorted()
                 .toList();
     }
