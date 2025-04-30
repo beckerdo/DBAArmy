@@ -168,6 +168,14 @@ public class ArmyListTest {
                 .sorted()
                 .toList();
 
+        // Warning, the following armies have multiple terrain choices.
+        //    II/8a Bruttian or Lucanian Armies 420-203 BC: Hilly/Arable
+        //    II/70a Army of the Burgundi 250-534 AD: Forest/Arable
+        //    II/70b Army of the Limigantes 334-359 AD: Steppe/Arable
+        //    II/72b Alamanni Army 250-506 AD: Forest/Arable
+        //    II/72c Suevi Army 250-584 AD: Forest/Arable
+        //    II/72d Other Early Frankish, Rugian or Turcilingi Armies 250-493 AD: Forest/Arable
+        //    II/73 Old Saxon Army 250-804 AD, Frisian Army 250-690 AD, Bavarian Army 250-788 AD, Thuringian Army 250-531 AD & 555 AD and Early Anglo-Saxon Army 428-617AD: Arable/Littoral/Forest
         for (ArmyVariant variant : variants) {
             switch ( variant.terrain ) {
                 case null ->
@@ -188,22 +196,14 @@ public class ArmyListTest {
             }
 
         }
-        // Warning, the following armies have multiple terrain choices.
-//            II/8a Bruttian or Lucanian Armies 420-203 BC: Hilly/Arable
-//            II/70a Army of the Burgundi 250-534 AD: Forest/Arable
-//            II/70b Army of the Limigantes 334-359 AD: Steppe/Arable
-//            II/72b Alamanni Army 250-506 AD: Forest/Arable
-//            II/72c Suevi Army 250-584 AD: Forest/Arable
-//            II/72d Other Early Frankish, Rugian or Turcilingi Armies 250-493 AD: Forest/Arable
-//            II/73 Old Saxon Army 250-804 AD, Frisian Army 250-690 AD, Bavarian Army 250-788 AD, Thuringian Army 250-531 AD & 555 AD and Early Anglo-Saxon Army 428-617AD: Arable/Littoral/Forest
 
 
         // Print variants to double check values
-//        for (ArmyVariant variant : variants) {
-//            System.out.format("%s %s: %s%n   %s %d, E:%s, A:%s%n",
-//                    variant.armyRef, variant.variantName, variant.troopDef.toString(),
-//                    variant.terrain, variant.aggression, variant.enemies.toString(), variant.allies.toString());
-//        }
+        for (ArmyVariant variant : variants) {
+            System.out.format("%s %s: %s%n   %s %d, E:%s, A:%s%n",
+                    variant.armyRef, variant.variantName, variant.troopDef.toString(),
+                    variant.terrain, variant.aggression, variant.enemies.toString(), variant.allies.toString());
+        }
     }
 
     @Test

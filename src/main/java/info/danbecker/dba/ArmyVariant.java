@@ -44,7 +44,7 @@ public class ArmyVariant implements Comparable<ArmyVariant> {
      * Construct header from ArmyHeaderBean information.
      * Synthesize and fill in other fields.
      *
-     * @param armyRef
+     * @param armyRef army reference
      */
     public ArmyVariant(ArmyRef armyRef, String variantName, String troopDef,
         String terrain, int aggression, String enemies, String allies) {
